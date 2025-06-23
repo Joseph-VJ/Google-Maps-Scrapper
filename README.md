@@ -8,16 +8,17 @@ To do a custom web scraping project you can find me on Upwork
 </a>
 
 ## Table of Contents
-
-- [Prerequisite](#prerequisite)
+- [Prerequisites](#prerequisites)
 - [Key Features](#key-features)
 - [Installation](#installation)
-- [How to Use](#how-to-use)
+- [Usage](#usage)
+- [Example](#example)
+- [Notes](#notes)
 - [Video Example](#video-example)
 
-## Prerequisite
-- This code requires a python version below 3.10
-- Any version of python beyond 3.9 may cause issues and may not work properly
+## Prerequisites
+- Python 3.8 or 3.9 (Python 3.10+ may not be compatible with some dependencies)
+- Google Chrome or Chromium browser installed (for Playwright)
 
 ## Key Features
 - Data Scraping: The script scrapes data from Google Maps listings, extracting valuable information about businesses, such as their name, address, website, and contact details.
@@ -37,33 +38,49 @@ To do a custom web scraping project you can find me on Upwork
 ## Installation
 
 1. Clone this repository:
-
    ```bash
-   git clone https://github.com/zohaibbashir/google-maps-scraping.git
-2. Navigate to the project directory:
+   git clone https://github.com/zohaibbashir/Google-Maps-Scrapper.git
+   cd google-maps-scraper
+   ```
+2. Install Python dependencies:
    ```bash
-   cd google-maps-scraping
-3. Install the required Python packages:
-    ```bash
-    pip install -r requirements.txt
-
-## How to Use:
-
-To use this script, follow these steps:
-
-1. Run the script with Python:
-    ```bash
-     python main.py -s "search term" -t total
-    ```
-    Write the name of the place/business in "search term" and a number in place of "total" to get the number of listings. If listings are less than the number provided it is because there are fewer listings than the number provided such as
+   pip install -r requirements.txt
+   ```
+3. Install Playwright browsers:
    ```bash
-     python main.py -s "Turkish Restaurants in Toronto Canada" -t 20
-    ```
+   playwright install
+   ```
 
-3. The script will launch a browser, perform the search, and start scraping information. It will display the progress and save the results to a CSV file called result.csv.
-## Video Example:
-I've included an example of running the code below.
+## Usage
+
+Run the script with your desired search term and number of results:
+
+```bash
+python main.py -s "Turkish Restaurants in Toronto Canada" -t 20
+```
+
+- `-s` or `--search`: Search query for Google Maps (default: "turkish stores in toronto Canada")
+- `-t` or `--total`: Number of results to scrape (default: 1)
+- `-o` or `--output`: Output CSV file path (default: result.csv)
+- `--append`: Append results to the output file instead of overwriting (default: off)
+
+## Example
+
+Append new results to an existing CSV file:
+```bash
+python main.py -s "Turkish Restaurants in Toronto Canada" -t 20 -o toronto_turkish_restaurants.csv --append
+```
+
+The script will launch a browser, perform the search, and start scraping information. Progress will be displayed in the terminal, and results will be saved to the specified CSV file. If `--append` is used, new results will be added to the end of the file without removing previous data.
+
+## Notes
+- The script opens a visible browser window (not headless) for scraping.
+- Google Maps DOM may change, which can break the script. If you encounter issues, update the XPaths in `main.py`.
+- Avoid running too many scrapes in a short period to prevent being blocked by Google.
+
+## Video Example
 
 https://www.linkedin.com/posts/zohaibbashir_python-data-webscraping-activity-7093920891411062784-flEQ
 
-
+## License
+MIT
