@@ -6,6 +6,7 @@ import pandas as pd
 import argparse
 import platform
 import time
+import os
 
 @dataclass
 class Place:
@@ -155,14 +156,17 @@ def scrape_places(search_for: str, total: int) -> List[Place]:
             browser.close()
     return places
 
-def save_places_to_csv(places: List[Place], output_path: str = "result.csv"):
+def save_places_to_csv(places: List[Place], output_path: str = "result.csv", append: bool = False):
     df = pd.DataFrame([asdict(place) for place in places])
     if not df.empty:
         for column in df.columns:
             if df[column].nunique() == 1:
                 df.drop(column, axis=1, inplace=True)
-        df.to_csv(output_path, index=False)
-        logging.info(f"Saved {len(df)} places to {output_path}")
+        file_exists = os.path.isfile(output_path)
+        mode = "a" if append else "w"
+        header = not (append and file_exists)
+        df.to_csv(output_path, index=False, mode=mode, header=header)
+        logging.info(f"Saved {len(df)} places to {output_path} (append={append})")
     else:
         logging.warning("No data to save. DataFrame is empty.")
 
@@ -171,12 +175,14 @@ def main():
     parser.add_argument("-s", "--search", type=str, help="Search query for Google Maps")
     parser.add_argument("-t", "--total", type=int, help="Total number of results to scrape")
     parser.add_argument("-o", "--output", type=str, default="result.csv", help="Output CSV file path")
+    parser.add_argument("--append", action="store_true", help="Append results to the output file instead of overwriting")
     args = parser.parse_args()
     search_for = args.search or "turkish stores in toronto Canada"
     total = args.total or 1
     output_path = args.output
+    append = args.append
     places = scrape_places(search_for, total)
-    save_places_to_csv(places, output_path)
+    save_places_to_csv(places, output_path, append=append)
 
 if __name__ == "__main__":
     main()
