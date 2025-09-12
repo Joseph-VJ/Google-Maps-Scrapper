@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-secondary text-white">
+                <h4><i class="fas fa-history"></i> Scraping History</h4>
+                <p class="mb-0">Previous scraping jobs and their results</p>
+            </div>
+            <div class="card-body">
+                {% if jobs %}
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>Search Query</th>
+                                    <th>Results</th>
+                                    <th>Output File</th>
+                                    <th>Status</th>
+                                    <th>Started</th>
+                                    <th>Duration</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for job in jobs %}
+                                <tr>
+                                    <td>
+                                        <div class="text-truncate" style="max-width: 200px;" title="{{ job.search_query }}">
+                                            {{ job.search_query }}
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <span class="badge bg-info">{{ job.result_count }}/{{ job.total_results }}</span>
+                                    </td>
+                                    <td>
+                                        <code>{{ job.output_file }}</code>
+                                    </td>
+                                    <td>
+                                        {% if job.status == 'completed' %}
+                                            <span class="badge bg-success">
+                                                <i class="fas fa-check"></i> Completed
+                                            </span>
+                                        {% elif job.status == 'failed' %}
+                                            <span class="badge bg-danger">
+                                                <i class="fas fa-times"></i> Failed
+                                            </span>
+                                        {% else %}
+                                            <span class="badge bg-warning">
+                                                <i class="fas fa-clock"></i> {{ job.status.title() }}
+                                            </span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <small>{{ job.start_time.strftime('%Y-%m-%d %H:%M') }}</small>
+                                    </td>
+                                    <td>
+                                        {% if job.end_time %}
+                                            {% set duration = job.end_time - job.start_time %}
+                                            <small>{{ duration.total_seconds()|int }}s</small>
+                                        {% else %}
+                                            <small class="text-muted">-</small>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <div class="btn-group btn-group-sm">
+                                            <a href="{{ url_for('monitor_job', job_id=job.job_id) }}" 
+                                               class="btn btn-outline-primary btn-sm" 
+                                               title="View Details">
+                                                <i class="fas fa-eye"></i>
+                                            </a>
+                                            {% if job.status == 'completed' %}
+                                                <a href="{{ url_for('download_results', job_id=job.job_id) }}" 
+                                                   class="btn btn-outline-success btn-sm" 
+                                                   title="Download Results">
+                                                    <i class="fas fa-download"></i>
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <div class="text-center py-5">
+                        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
+                        <h5 class="text-muted">No scraping jobs found</h5>
+                        <p class="text-muted">Start your first scraping job to see results here.</p>
+                        <a href="{{ url_for('index') }}" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Start New Job
+                        </a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,16 @@
+name,address,website,phone_number,reviews_count,reviews_average,store_shopping,in_store_pickup,store_delivery,place_type,opens_at,introduction
+Restaurant 1,"Street 1, Chennai",https://restaurant1.com,+91-9000000000,50,4.0,No,Yes,Yes,Restaurant,9:00 AM,Great restaurant number 1 in Chennai
+Restaurant 2,"Street 2, Chennai",https://restaurant2.com,+91-9000000001,60,4.2,No,Yes,Yes,Restaurant,9:00 AM,Great restaurant number 2 in Chennai
+Restaurant 3,"Street 3, Chennai",https://restaurant3.com,+91-9000000002,70,4.4,No,Yes,Yes,Restaurant,9:00 AM,Great restaurant number 3 in Chennai
+Restaurant 4,"Street 4, Chennai",https://restaurant4.com,+91-9000000003,80,4.6,No,Yes,Yes,Restaurant,9:00 AM,Great restaurant number 4 in Chennai
+Restaurant 5,"Street 5, Chennai",https://restaurant5.com,+91-9000000004,90,4.8,No,Yes,Yes,Restaurant,9:00 AM,Great restaurant number 5 in Chennai
+Restaurant 6,"Street 6, Chennai",https://restaurant6.com,+91-9000000005,100,4.0,No,Yes,Yes,Restaurant,9:00 AM,Great restaurant number 6 in Chennai
+Restaurant 7,"Street 7, Chennai",https://restaurant7.com,+91-9000000006,110,4.2,No,Yes,Yes,Restaurant,9:00 AM,Great restaurant number 7 in Chennai
+Restaurant 8,"Street 8, Chennai",https://restaurant8.com,+91-9000000007,120,4.4,No,Yes,Yes,Restaurant,9:00 AM,Great restaurant number 8 in Chennai
+Restaurant 9,"Street 9, Chennai",https://restaurant9.com,+91-9000000008,130,4.6,No,Yes,Yes,Restaurant,9:00 AM,Great restaurant number 9 in Chennai
+Restaurant 10,"Street 10, Chennai",https://restaurant10.com,+91-9000000009,140,4.8,No,Yes,Yes,Restaurant,9:00 AM,Great restaurant number 10 in Chennai
+Restaurant 11,"Street 11, Chennai",https://restaurant11.com,+91-9000000010,150,4.0,No,Yes,Yes,Restaurant,9:00 AM,Great restaurant number 11 in Chennai
+Restaurant 12,"Street 12, Chennai",https://restaurant12.com,+91-9000000011,160,4.2,No,Yes,Yes,Restaurant,9:00 AM,Great restaurant number 12 in Chennai
+Restaurant 13,"Street 13, Chennai",https://restaurant13.com,+91-9000000012,170,4.4,No,Yes,Yes,Restaurant,9:00 AM,Great restaurant number 13 in Chennai
+Restaurant 14,"Street 14, Chennai",https://restaurant14.com,+91-9000000013,180,4.6,No,Yes,Yes,Restaurant,9:00 AM,Great restaurant number 14 in Chennai
+Restaurant 15,"Street 15, Chennai",https://restaurant15.com,+91-9000000014,190,4.8,No,Yes,Yes,Restaurant,9:00 AM,Great restaurant number 15 in Chennai

@@ -11,7 +11,8 @@ To do a custom web scraping project you can find me on Upwork
 - [Prerequisites](#prerequisites)
 - [Key Features](#key-features)
 - [Installation](#installation)
-- [Usage](#usage)
+- [Web Interface](#web-interface)
+- [Command Line Usage](#command-line-usage)
 - [Example](#example)
 - [Notes](#notes)
 - [Video Example](#video-example)
@@ -51,7 +52,29 @@ To do a custom web scraping project you can find me on Upwork
    playwright install
    ```
 
-## Usage
+## Web Interface
+
+### Easy Way (Recommended)
+Double-click `start_web_interface.bat` to launch the web interface automatically.
+
+### Manual Start
+1. Start the web server:
+   ```bash
+   python app.py
+   ```
+
+2. Open your browser and go to: `http://127.0.0.1:5000`
+
+3. Use the web interface to:
+   - Enter search queries
+   - Set number of results
+   - Monitor progress in real-time
+   - Download and preview results
+   - View scraping history
+
+The web interface provides a user-friendly way to use the scraper without command line knowledge.
+
+## Command Line Usage
 
 Run the script with your desired search term and number of results:
 

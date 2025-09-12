@@ -1,0 +1,9 @@
+{
+  "search_query": "restaurants in Chennai",
+  "output_file": "demo_restaurants.csv",
+  "total_target": 100,
+  "scraped_count": 15,
+  "last_scraped_index": 15,
+  "timestamp": "2025-09-11T23:18:30.980523",
+  "cache_id": "cb2061b0097f7353d45f021edfb9192a"
+}

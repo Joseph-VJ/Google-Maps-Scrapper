@@ -1,0 +1,258 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header bg-primary text-white text-center">
+                <h3><i class="fas fa-search"></i> Google Maps Scraper</h3>
+                <p class="mb-0">Extract business information from Google Maps</p>
+            </div>
+            <div class="card-body">
+                <form method="POST" action="{{ url_for('start_scraping') }}">
+                    <div class="mb-3">
+                        <label for="search_query" class="form-label">
+                            <i class="fas fa-search"></i> Search Query
+                        </label>
+                        <input type="text" 
+                               class="form-control" 
+                               id="search_query" 
+                               name="search_query" 
+                               placeholder="e.g., Turkish restaurants in Toronto Canada"
+                               required>
+                        <div class="form-text">Enter your search query for Google Maps</div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="total_results" class="form-label">
+                                    <i class="fas fa-list-ol"></i> Number of Results
+                                </label>
+                                <input type="number" 
+                                       class="form-control" 
+                                       id="total_results" 
+                                       name="total_results" 
+                                       value="100" 
+                                       min="1"
+                                       required>
+                                <div class="form-text">Number of results to scrape (set high value like 9999 for all available)</div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="output_file" class="form-label">
+                                    <i class="fas fa-file-csv"></i> Output File Name
+                                </label>
+                                <input type="text" 
+                                       class="form-control" 
+                                       id="output_file" 
+                                       name="output_file" 
+                                       value="result.csv" 
+                                       placeholder="result.csv">
+                                <div class="form-text">Name of the output CSV file</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" 
+                                   type="checkbox" 
+                                   id="append_mode" 
+                                   name="append_mode">
+                            <label class="form-check-label" for="append_mode">
+                                <i class="fas fa-plus"></i> Append to existing file
+                            </label>
+                            <div class="form-text">If checked, results will be added to the existing file instead of overwriting it</div>
+                        </div>
+                        
+                        <div class="form-check mt-2">
+                            <input class="form-check-input" 
+                                   type="checkbox" 
+                                   id="fast_append" 
+                                   name="fast_append">
+                            <label class="form-check-label" for="fast_append">
+                                <i class="fas fa-bolt"></i> ⚡ Ultra-Fast Append Mode (Skip all checks)
+                            </label>
+                            <div class="form-text text-warning">
+                                <strong>Maximum Speed:</strong> Bypasses duplicate checks. Use when you're 100% sure there won't be duplicates.
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Cache Status Section -->
+                    <div id="cache_status" class="mb-3" style="display: none;">
+                        <div class="alert alert-info">
+                            <h6><i class="fas fa-database"></i> Cache Found - Can Resume Previous Session!</h6>
+                            <div id="cache_details"></div>
+                            <small class="text-muted">The scraper will automatically resume from where it was interrupted.</small>
+                        </div>
+                    </div>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-primary btn-lg">
+                            <i class="fas fa-play"></i> Start Scraping
+                        </button>
+                    </div>
+                    
+                    <div class="text-center mt-3">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <a href="{{ url_for('chennai') }}" class="btn btn-success btn-lg w-100">
+                                    <i class="fas fa-map-marked-alt"></i> Chennai Area Scraper
+                                </a>
+                                <small class="text-muted d-block mt-1">Scrape by specific Chennai areas</small>
+                            </div>
+                            <div class="col-md-6">
+                                <a href="{{ url_for('history') }}" class="btn btn-outline-secondary btn-lg w-100">
+                                    <i class="fas fa-history"></i> View History
+                                </a>
+                                <small class="text-muted d-block mt-1">See previous scraping jobs</small>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5><i class="fas fa-info-circle"></i> Features</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="text-center mb-3">
+                            <i class="fas fa-building fa-2x text-primary mb-2"></i>
+                            <h6>Business Information</h6>
+                            <small class="text-muted">Name, address, website, phone number</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center mb-3">
+                            <i class="fas fa-star fa-2x text-warning mb-2"></i>
+                            <h6>Reviews & Ratings</h6>
+                            <small class="text-muted">Review counts and average ratings</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center mb-3">
+                            <i class="fas fa-clock fa-2x text-success mb-2"></i>
+                            <h6>Operating Hours</h6>
+                            <small class="text-muted">Business opening times and schedules</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="text-center mb-3">
+                            <i class="fas fa-shopping-cart fa-2x text-info mb-2"></i>
+                            <h6>Service Options</h6>
+                            <small class="text-muted">In-store shopping, pickup, delivery</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center mb-3">
+                            <i class="fas fa-tag fa-2x text-secondary mb-2"></i>
+                            <h6>Business Type</h6>
+                            <small class="text-muted">Category and type classification</small>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="text-center mb-3">
+                            <i class="fas fa-file-csv fa-2x text-danger mb-2"></i>
+                            <h6>CSV Export</h6>
+                            <small class="text-muted">Clean, organized data export</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Cache checking functionality
+function checkCache() {
+    const searchQuery = document.getElementById('search_query').value.trim();
+    const outputFile = document.getElementById('output_file').value.trim();
+    const cacheStatus = document.getElementById('cache_status');
+    const cacheDetails = document.getElementById('cache_details');
+    
+    if (searchQuery && outputFile) {
+        fetch('/check_cache', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                search_query: searchQuery,
+                output_file: outputFile
+            })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.has_cache && data.cache_info && data.cache_info.can_resume) {
+                const cache = data.cache_info;
+                const percentage = Math.round((cache.scraped_count / cache.total_target) * 100);
+                const timestamp = new Date(cache.timestamp).toLocaleString();
+                
+                cacheDetails.innerHTML = `
+                    <strong>Progress:</strong> ${cache.scraped_count}/${cache.total_target} records (${percentage}%)<br>
+                    <strong>Last updated:</strong> ${timestamp}<br>
+                    <strong>File status:</strong> ${cache.existing_file_count} records in output file
+                `;
+                cacheStatus.style.display = 'block';
+                
+                // Auto-enable append mode for resuming
+                document.getElementById('append_mode').checked = true;
+            } else {
+                cacheStatus.style.display = 'none';
+            }
+        })
+        .catch(error => {
+            console.log('Cache check failed:', error);
+            cacheStatus.style.display = 'none';
+        });
+    } else {
+        cacheStatus.style.display = 'none';
+    }
+}
+
+// Handle fast append checkbox logic
+document.getElementById('fast_append').addEventListener('change', function() {
+    const appendMode = document.getElementById('append_mode');
+    if (this.checked) {
+        appendMode.checked = true;
+        appendMode.disabled = true;
+    } else {
+        appendMode.disabled = false;
+    }
+});
+
+// Add event listeners for cache checking
+document.getElementById('search_query').addEventListener('input', debounce(checkCache, 500));
+document.getElementById('output_file').addEventListener('input', debounce(checkCache, 500));
+
+// Debounce function to avoid too many API calls
+function debounce(func, wait) {
+    let timeout;
+    return function executedFunction(...args) {
+        const later = () => {
+            clearTimeout(timeout);
+            func(...args);
+        };
+        clearTimeout(timeout);
+        timeout = setTimeout(later, wait);
+    };
+}
+
+// Check cache on page load if fields are pre-filled
+document.addEventListener('DOMContentLoaded', function() {
+    checkCache();
+});
+</script>
+
+{% endblock %}
