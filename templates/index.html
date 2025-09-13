@@ -3,19 +3,54 @@
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-8">
-        <div class="card">
-            <div class="card-header bg-primary text-white text-center">
-                <h3><i class="fas fa-search"></i> Google Maps Scraper</h3>
-                <p class="mb-0">Extract business information from Google Maps</p>
+        <!-- Page header with title and description -->
+        <div class="text-center mb-4">
+            <h1 class="text-white fw-bold">Google Maps Scraper</h1>
+            <p class="text-white-50 mb-0">Extract business information from Google Maps with ease</p>
+        </div>
+        
+        <!-- Quick action cards -->
+        <div class="row mb-4">
+            <div class="col-md-6 mb-3">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-search fa-2x text-primary mb-3"></i>
+                        <h5 class="card-title">Standard Scraping</h5>
+                        <p class="card-text text-muted">Scrape businesses anywhere in the world</p>
+                        <button class="btn btn-primary" onclick="showStandardForm()">Start Scraping</button>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-map-marked-alt fa-2x text-success mb-3"></i>
+                        <h5 class="card-title">Chennai Areas</h5>
+                        <p class="card-text text-muted">Scrape specific areas in Chennai</p>
+                        <a href="{{ url_for('chennai') }}" class="btn btn-success">Go to Chennai</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Main scraping form -->
+        <div class="card" id="standardForm">
+            <div class="card-header bg-primary text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h4 class="mb-0"><i class="fas fa-search"></i> Standard Scraping</h4>
+                    <button class="btn btn-sm btn-light" onclick="toggleForm()">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
             </div>
             <div class="card-body">
-                <form method="POST" action="{{ url_for('start_scraping') }}">
+                <form method="POST" action="{{ url_for('start_scraping') }}" id="scrapingForm">
                     <div class="mb-3">
                         <label for="search_query" class="form-label">
                             <i class="fas fa-search"></i> Search Query
                         </label>
                         <input type="text" 
-                               class="form-control" 
+                               class="form-control form-control-lg" 
                                id="search_query" 
                                name="search_query" 
                                placeholder="e.g., Turkish restaurants in Toronto Canada"
@@ -30,7 +65,7 @@
                                     <i class="fas fa-list-ol"></i> Number of Results
                                 </label>
                                 <input type="number" 
-                                       class="form-control" 
+                                       class="form-control form-control-lg" 
                                        id="total_results" 
                                        name="total_results" 
                                        value="100" 
@@ -46,7 +81,7 @@
                                     <i class="fas fa-file-csv"></i> Output File Name
                                 </label>
                                 <input type="text" 
-                                       class="form-control" 
+                                       class="form-control form-control-lg" 
                                        id="output_file" 
                                        name="output_file" 
                                        value="result.csv" 
@@ -56,28 +91,42 @@
                         </div>
                     </div>
 
-                    <div class="mb-3">
-                        <div class="form-check">
-                            <input class="form-check-input" 
-                                   type="checkbox" 
-                                   id="append_mode" 
-                                   name="append_mode">
-                            <label class="form-check-label" for="append_mode">
-                                <i class="fas fa-plus"></i> Append to existing file
-                            </label>
-                            <div class="form-text">If checked, results will be added to the existing file instead of overwriting it</div>
-                        </div>
-                        
-                        <div class="form-check mt-2">
-                            <input class="form-check-input" 
-                                   type="checkbox" 
-                                   id="fast_append" 
-                                   name="fast_append">
-                            <label class="form-check-label" for="fast_append">
-                                <i class="fas fa-bolt"></i> ⚡ Ultra-Fast Append Mode (Skip all checks)
-                            </label>
-                            <div class="form-text text-warning">
-                                <strong>Maximum Speed:</strong> Bypasses duplicate checks. Use when you're 100% sure there won't be duplicates.
+                    <!-- Advanced options accordion -->
+                    <div class="accordion mb-3" id="advancedOptions">
+                        <div class="accordion-item">
+                            <h2 class="accordion-header" id="advancedOptionsHeading">
+                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#advancedOptionsCollapse">
+                                    <i class="fas fa-cog me-2"></i> Advanced Options
+                                </button>
+                            </h2>
+                            <div id="advancedOptionsCollapse" class="accordion-collapse collapse" data-bs-parent="#advancedOptions">
+                                <div class="accordion-body">
+                                    <div class="mb-3">
+                                        <div class="form-check">
+                                            <input class="form-check-input" 
+                                                   type="checkbox" 
+                                                   id="append_mode" 
+                                                   name="append_mode">
+                                            <label class="form-check-label" for="append_mode">
+                                                <i class="fas fa-plus"></i> Append to existing file
+                                            </label>
+                                            <div class="form-text">If checked, results will be added to the existing file instead of overwriting it</div>
+                                        </div>
+                                        
+                                        <div class="form-check mt-2">
+                                            <input class="form-check-input" 
+                                                   type="checkbox" 
+                                                   id="fast_append" 
+                                                   name="fast_append">
+                                            <label class="form-check-label" for="fast_append">
+                                                <i class="fas fa-bolt"></i> ⚡ Ultra-Fast Append Mode (Skip all checks)
+                                            </label>
+                                            <div class="form-text text-warning">
+                                                <strong>Maximum Speed:</strong> Bypasses duplicate checks. Use when you're 100% sure there won't be duplicates.
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
@@ -92,34 +141,18 @@
                     </div>
 
                     <div class="d-grid">
-                        <button type="submit" class="btn btn-primary btn-lg">
+                        <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
                             <i class="fas fa-play"></i> Start Scraping
                         </button>
-                    </div>
-                    
-                    <div class="text-center mt-3">
-                        <div class="row">
-                            <div class="col-md-6">
-                                <a href="{{ url_for('chennai') }}" class="btn btn-success btn-lg w-100">
-                                    <i class="fas fa-map-marked-alt"></i> Chennai Area Scraper
-                                </a>
-                                <small class="text-muted d-block mt-1">Scrape by specific Chennai areas</small>
-                            </div>
-                            <div class="col-md-6">
-                                <a href="{{ url_for('history') }}" class="btn btn-outline-secondary btn-lg w-100">
-                                    <i class="fas fa-history"></i> View History
-                                </a>
-                                <small class="text-muted d-block mt-1">See previous scraping jobs</small>
-                            </div>
-                        </div>
                     </div>
                 </form>
             </div>
         </div>
 
+        <!-- Features section -->
         <div class="card mt-4">
             <div class="card-header">
-                <h5><i class="fas fa-info-circle"></i> Features</h5>
+                <h5><i class="fas fa-star"></i> Key Features</h5>
             </div>
             <div class="card-body">
                 <div class="row">
@@ -174,6 +207,19 @@
 </div>
 
 <script>
+// Show standard form
+function showStandardForm() {
+    document.getElementById('standardForm').style.display = 'block';
+    // Scroll to form
+    document.getElementById('standardForm').scrollIntoView({ behavior: 'smooth' });
+}
+
+// Toggle form visibility
+function toggleForm() {
+    const form = document.getElementById('standardForm');
+    form.style.display = form.style.display === 'none' ? 'block' : 'none';
+}
+
 // Cache checking functionality
 function checkCache() {
     const searchQuery = document.getElementById('search_query').value.trim();
@@ -200,14 +246,26 @@ function checkCache() {
                 const timestamp = new Date(cache.timestamp).toLocaleString();
                 
                 cacheDetails.innerHTML = `
-                    <strong>Progress:</strong> ${cache.scraped_count}/${cache.total_target} records (${percentage}%)<br>
-                    <strong>Last updated:</strong> ${timestamp}<br>
-                    <strong>File status:</strong> ${cache.existing_file_count} records in output file
+                    <div class="mt-2">
+                        <div class="d-flex justify-content-between">
+                            <span><strong>Progress:</strong></span>
+                            <span>${cache.scraped_count}/${cache.total_target} records (${percentage}%)</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span><strong>Last updated:</strong></span>
+                            <span>${timestamp}</span>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <span><strong>File status:</strong></span>
+                            <span>${cache.existing_file_count} records in output file</span>
+                        </div>
+                    </div>
                 `;
                 cacheStatus.style.display = 'block';
                 
                 // Auto-enable append mode for resuming
                 document.getElementById('append_mode').checked = true;
+                showNotification('Cache found! Resuming previous session.', 'info');
             } else {
                 cacheStatus.style.display = 'none';
             }
@@ -249,8 +307,33 @@ function debounce(func, wait) {
     };
 }
 
+// Form validation
+document.getElementById('scrapingForm').addEventListener('submit', function(e) {
+    const searchQuery = document.getElementById('search_query').value.trim();
+    const totalResults = document.getElementById('total_results').value;
+    
+    if (!searchQuery) {
+        e.preventDefault();
+        showNotification('Please enter a search query', 'error');
+        return;
+    }
+    
+    if (totalResults < 1) {
+        e.preventDefault();
+        showNotification('Please enter a valid number of results', 'error');
+        return;
+    }
+    
+    // Show loading state
+    const submitBtn = document.getElementById('submitBtn');
+    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Starting Scraping...';
+    submitBtn.disabled = true;
+});
+
 // Check cache on page load if fields are pre-filled
 document.addEventListener('DOMContentLoaded', function() {
+    // Initially hide the form
+    document.getElementById('standardForm').style.display = 'none';
     checkCache();
 });
 </script>

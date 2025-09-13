@@ -106,754 +106,810 @@
                             </div>
                         </div>
                         
+                        <!-- Enhanced area selection with better organization -->
                         <div class="card">
                             <div class="card-body" style="max-height: 400px; overflow-y: auto;">
-                                <div class="row">
+                                <!-- Area selection tabs -->
+                                <ul class="nav nav-tabs mb-3" id="areaTabs" role="tablist">
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link active" id="central-tab" data-bs-toggle="tab" data-bs-target="#central" type="button" role="tab">
+                                            <i class="fas fa-building"></i> Central
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="south-tab" data-bs-toggle="tab" data-bs-target="#south" type="button" role="tab">
+                                            <i class="fas fa-leaf"></i> South
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="north-tab" data-bs-toggle="tab" data-bs-target="#north" type="button" role="tab">
+                                            <i class="fas fa-industry"></i> North
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="west-tab" data-bs-toggle="tab" data-bs-target="#west" type="button" role="tab">
+                                            <i class="fas fa-home"></i> West
+                                        </button>
+                                    </li>
+                                    <li class="nav-item" role="presentation">
+                                        <button class="nav-link" id="special-tab" data-bs-toggle="tab" data-bs-target="#special" type="button" role="tab">
+                                            <i class="fas fa-star"></i> Special Areas
+                                        </button>
+                                    </li>
+                                </ul>
+                                
+                                <!-- Tab content -->
+                                <div class="tab-content" id="areaTabsContent">
                                     <!-- Central Chennai -->
-                                    <div class="col-md-3">
-                                        <h6 class="text-primary"><i class="fas fa-building"></i> Central Chennai</h6>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="T. Nagar" id="tnagar">
-                                            <label class="form-check-label" for="tnagar">T. Nagar</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Anna Nagar" id="annanagar">
-                                            <label class="form-check-label" for="annanagar">Anna Nagar</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Vadapalani" id="vadapalani">
-                                            <label class="form-check-label" for="vadapalani">Vadapalani</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Kodambakkam" id="kodambakkam">
-                                            <label class="form-check-label" for="kodambakkam">Kodambakkam</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Nungambakkam" id="nungambakkam">
-                                            <label class="form-check-label" for="nungambakkam">Nungambakkam</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Egmore" id="egmore">
-                                            <label class="form-check-label" for="egmore">Egmore</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Chetpet" id="chetpet">
-                                            <label class="form-check-label" for="chetpet">Chetpet</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Kilpauk" id="kilpauk">
-                                            <label class="form-check-label" for="kilpauk">Kilpauk</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Purasawalkam" id="purasawalkam">
-                                            <label class="form-check-label" for="purasawalkam">Purasawalkam</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Thousand Lights" id="thousandlights">
-                                            <label class="form-check-label" for="thousandlights">Thousand Lights</label>
-                                        </div>
-                                        <!-- Missing Central Chennai areas -->
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Aminjikarai" id="aminjikarai">
-                                            <label class="form-check-label" for="aminjikarai">Aminjikarai</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Arumbakkam" id="arumbakkam">
-                                            <label class="form-check-label" for="arumbakkam">Arumbakkam</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Chepauk" id="chepauk">
-                                            <label class="form-check-label" for="chepauk">Chepauk</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Chintadripet" id="chintadripet">
-                                            <label class="form-check-label" for="chintadripet">Chintadripet</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Choolaimedu" id="choolaimedu">
-                                            <label class="form-check-label" for="choolaimedu">Choolaimedu</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Gopalapuram" id="gopalapuram">
-                                            <label class="form-check-label" for="gopalapuram">Gopalapuram</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Koyambedu" id="koyambedu">
-                                            <label class="form-check-label" for="koyambedu">Koyambedu</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Mandaveli" id="mandaveli">
-                                            <label class="form-check-label" for="mandaveli">Mandaveli</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Nandanam" id="nandanam">
-                                            <label class="form-check-label" for="nandanam">Nandanam</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Park Town" id="parktown">
-                                            <label class="form-check-label" for="parktown">Park Town</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Pudupet" id="pudupet">
-                                            <label class="form-check-label" for="pudupet">Pudupet</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Royapettah" id="royapettah">
-                                            <label class="form-check-label" for="royapettah">Royapettah</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Santhome" id="santhome">
-                                            <label class="form-check-label" for="santhome">Santhome</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Shenoy Nagar" id="shenoynagar">
-                                            <label class="form-check-label" for="shenoynagar">Shenoy Nagar</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Teynampet" id="teynampet">
-                                            <label class="form-check-label" for="teynampet">Teynampet</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Vepery" id="vepery">
-                                            <label class="form-check-label" for="vepery">Vepery</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Abiramapuram" id="abiramapuram">
-                                            <label class="form-check-label" for="abiramapuram">Abiramapuram</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Alwarpet" id="alwarpet">
-                                            <label class="form-check-label" for="alwarpet">Alwarpet</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="CIT Nagar" id="citnagar">
-                                            <label class="form-check-label" for="citnagar">CIT Nagar</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="ICF Colony" id="icfcolony">
-                                            <label class="form-check-label" for="icfcolony">ICF Colony</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="R.A. Puram (Raja Annamalai Puram)" id="rapuram">
-                                            <label class="form-check-label" for="rapuram">R.A. Puram (Raja Annamalai Puram)</label>
+                                    <div class="tab-pane fade show active" id="central" role="tabpanel">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <h6 class="text-primary"><i class="fas fa-building"></i> Central Chennai</h6>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="T. Nagar" id="tnagar">
+                                                    <label class="form-check-label" for="tnagar">T. Nagar</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Anna Nagar" id="annanagar">
+                                                    <label class="form-check-label" for="annanagar">Anna Nagar</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Vadapalani" id="vadapalani">
+                                                    <label class="form-check-label" for="vadapalani">Vadapalani</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Kodambakkam" id="kodambakkam">
+                                                    <label class="form-check-label" for="kodambakkam">Kodambakkam</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Nungambakkam" id="nungambakkam">
+                                                    <label class="form-check-label" for="nungambakkam">Nungambakkam</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Egmore" id="egmore">
+                                                    <label class="form-check-label" for="egmore">Egmore</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Chetpet" id="chetpet">
+                                                    <label class="form-check-label" for="chetpet">Chetpet</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Kilpauk" id="kilpauk">
+                                                    <label class="form-check-label" for="kilpauk">Kilpauk</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Purasawalkam" id="purasawalkam">
+                                                    <label class="form-check-label" for="purasawalkam">Purasawalkam</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Thousand Lights" id="thousandlights">
+                                                    <label class="form-check-label" for="thousandlights">Thousand Lights</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Aminjikarai" id="aminjikarai">
+                                                    <label class="form-check-label" for="aminjikarai">Aminjikarai</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Arumbakkam" id="arumbakkam">
+                                                    <label class="form-check-label" for="arumbakkam">Arumbakkam</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Chepauk" id="chepauk">
+                                                    <label class="form-check-label" for="chepauk">Chepauk</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Chintadripet" id="chintadripet">
+                                                    <label class="form-check-label" for="chintadripet">Chintadripet</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Choolaimedu" id="choolaimedu">
+                                                    <label class="form-check-label" for="choolaimedu">Choolaimedu</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <h6 class="text-primary"><i class="fas fa-building"></i> Central Chennai (cont.)</h6>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Gopalapuram" id="gopalapuram">
+                                                    <label class="form-check-label" for="gopalapuram">Gopalapuram</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Koyambedu" id="koyambedu">
+                                                    <label class="form-check-label" for="koyambedu">Koyambedu</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Mandaveli" id="mandaveli">
+                                                    <label class="form-check-label" for="mandaveli">Mandaveli</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Nandanam" id="nandanam">
+                                                    <label class="form-check-label" for="nandanam">Nandanam</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Park Town" id="parktown">
+                                                    <label class="form-check-label" for="parktown">Park Town</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Pudupet" id="pudupet">
+                                                    <label class="form-check-label" for="pudupet">Pudupet</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Royapettah" id="royapettah">
+                                                    <label class="form-check-label" for="royapettah">Royapettah</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Santhome" id="santhome">
+                                                    <label class="form-check-label" for="santhome">Santhome</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Shenoy Nagar" id="shenoynagar">
+                                                    <label class="form-check-label" for="shenoynagar">Shenoy Nagar</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Teynampet" id="teynampet">
+                                                    <label class="form-check-label" for="teynampet">Teynampet</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Vepery" id="vepery">
+                                                    <label class="form-check-label" for="vepery">Vepery</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Abiramapuram" id="abiramapuram">
+                                                    <label class="form-check-label" for="abiramapuram">Abiramapuram</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Alwarpet" id="alwarpet">
+                                                    <label class="form-check-label" for="alwarpet">Alwarpet</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="CIT Nagar" id="citnagar">
+                                                    <label class="form-check-label" for="citnagar">CIT Nagar</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="ICF Colony" id="icfcolony">
+                                                    <label class="form-check-label" for="icfcolony">ICF Colony</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="R.A. Puram (Raja Annamalai Puram)" id="rapuram">
+                                                    <label class="form-check-label" for="rapuram">R.A. Puram (Raja Annamalai Puram)</label>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-
+                                    
                                     <!-- South Chennai -->
-                                    <div class="col-md-3">
-                                        <h6 class="text-success"><i class="fas fa-leaf"></i> South Chennai</h6>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Adyar" id="adyar">
-                                            <label class="form-check-label" for="adyar">Adyar</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Velachery" id="velachery">
-                                            <label class="form-check-label" for="velachery">Velachery</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Tambaram" id="tambaram">
-                                            <label class="form-check-label" for="tambaram">Tambaram</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Guindy" id="guindy">
-                                            <label class="form-check-label" for="guindy">Guindy</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Pallikaranai" id="pallikaranai">
-                                            <label class="form-check-label" for="pallikaranai">Pallikaranai</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Mylapore" id="mylapore">
-                                            <label class="form-check-label" for="mylapore">Mylapore</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Besant Nagar" id="besantnagar">
-                                            <label class="form-check-label" for="besantnagar">Besant Nagar</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Thiruvanmiyur" id="thiruvanmiyur">
-                                            <label class="form-check-label" for="thiruvanmiyur">Thiruvanmiyur</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Sholinganallur" id="sholinganallur">
-                                            <label class="form-check-label" for="sholinganallur">Sholinganallur</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="OMR" id="omr">
-                                            <label class="form-check-label" for="omr">OMR (Old Mahabalipuram Road)</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Perungudi" id="perungudi">
-                                            <label class="form-check-label" for="perungudi">Perungudi</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Taramani" id="taramani">
-                                            <label class="form-check-label" for="taramani">Taramani</label>
-                                        </div>
-                                        <!-- Missing South Chennai areas -->
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Adambakkam" id="adambakkam">
-                                            <label class="form-check-label" for="adambakkam">Adambakkam</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Injambakkam" id="injambakkam">
-                                            <label class="form-check-label" for="injambakkam">Injambakkam</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Keelkattalai" id="keelkattalai">
-                                            <label class="form-check-label" for="keelkattalai">Keelkattalai</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Kottivakkam" id="kottivakkam">
-                                            <label class="form-check-label" for="kottivakkam">Kottivakkam</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Kotturpuram" id="kotturpuram">
-                                            <label class="form-check-label" for="kotturpuram">Kotturpuram</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Kovilambakkam" id="kovilambakkam">
-                                            <label class="form-check-label" for="kovilambakkam">Kovilambakkam</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Madipakkam" id="madipakkam">
-                                            <label class="form-check-label" for="madipakkam">Madipakkam</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Manapakkam" id="manapakkam">
-                                            <label class="form-check-label" for="manapakkam">Manapakkam</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Nanganallur" id="nanganallur">
-                                            <label class="form-check-label" for="nanganallur">Nanganallur</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Neelankarai" id="neelankarai">
-                                            <label class="form-check-label" for="neelankarai">Neelankarai</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Palavakkam" id="palavakkam">
-                                            <label class="form-check-label" for="palavakkam">Palavakkam</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Perumbakkam" id="perumbakkam">
-                                            <label class="form-check-label" for="perumbakkam">Perumbakkam</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Sembakkam" id="sembakkam">
-                                            <label class="form-check-label" for="sembakkam">Sembakkam</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Selaiyur" id="selaiyur">
-                                            <label class="form-check-label" for="selaiyur">Selaiyur</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Sithalapakkam" id="sithalapakkam">
-                                            <label class="form-check-label" for="sithalapakkam">Sithalapakkam</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="St. Thomas Mount" id="stthomasmount">
-                                            <label class="form-check-label" for="stthomasmount">St. Thomas Mount</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Ullagaram-Puzhuthivakkam" id="ullagrampuzhuthivakkam">
-                                            <label class="form-check-label" for="ullagrampuzhuthivakkam">Ullagaram-Puzhuthivakkam</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Guindy Industrial Estate" id="guindyindustrial">
-                                            <label class="form-check-label" for="guindyindustrial">Guindy Industrial Estate</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Kottur" id="kottur">
-                                            <label class="form-check-label" for="kottur">Kottur</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Kovur" id="kovur">
-                                            <label class="form-check-label" for="kovur">Kovur</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="MEPZ (Madras Export Processing Zone)" id="mepz">
-                                            <label class="form-check-label" for="mepz">MEPZ (Madras Export Processing Zone)</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Nanmangalam" id="nanmangalam">
-                                            <label class="form-check-label" for="nanmangalam">Nanmangalam</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Puzhuthivakkam" id="puzhuthivakkam">
-                                            <label class="form-check-label" for="puzhuthivakkam">Puzhuthivakkam</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="SIPCOT IT Park" id="sipcotitpark">
-                                            <label class="form-check-label" for="sipcotitpark">SIPCOT IT Park</label>
+                                    <div class="tab-pane fade" id="south" role="tabpanel">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <h6 class="text-success"><i class="fas fa-leaf"></i> South Chennai</h6>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Adyar" id="adyar">
+                                                    <label class="form-check-label" for="adyar">Adyar</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Velachery" id="velachery">
+                                                    <label class="form-check-label" for="velachery">Velachery</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Tambaram" id="tambaram">
+                                                    <label class="form-check-label" for="tambaram">Tambaram</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Guindy" id="guindy">
+                                                    <label class="form-check-label" for="guindy">Guindy</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Pallikaranai" id="pallikaranai">
+                                                    <label class="form-check-label" for="pallikaranai">Pallikaranai</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Mylapore" id="mylapore">
+                                                    <label class="form-check-label" for="mylapore">Mylapore</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Besant Nagar" id="besantnagar">
+                                                    <label class="form-check-label" for="besantnagar">Besant Nagar</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Thiruvanmiyur" id="thiruvanmiyur">
+                                                    <label class="form-check-label" for="thiruvanmiyur">Thiruvanmiyur</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Sholinganallur" id="sholinganallur">
+                                                    <label class="form-check-label" for="sholinganallur">Sholinganallur</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="OMR" id="omr">
+                                                    <label class="form-check-label" for="omr">OMR (Old Mahabalipuram Road)</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Perungudi" id="perungudi">
+                                                    <label class="form-check-label" for="perungudi">Perungudi</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Taramani" id="taramani">
+                                                    <label class="form-check-label" for="taramani">Taramani</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Adambakkam" id="adambakkam">
+                                                    <label class="form-check-label" for="adambakkam">Adambakkam</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Injambakkam" id="injambakkam">
+                                                    <label class="form-check-label" for="injambakkam">Injambakkam</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Keelkattalai" id="keelkattalai">
+                                                    <label class="form-check-label" for="keelkattalai">Keelkattalai</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <h6 class="text-success"><i class="fas fa-leaf"></i> South Chennai (cont.)</h6>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Kottivakkam" id="kottivakkam">
+                                                    <label class="form-check-label" for="kottivakkam">Kottivakkam</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Kotturpuram" id="kotturpuram">
+                                                    <label class="form-check-label" for="kotturpuram">Kotturpuram</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Kovilambakkam" id="kovilambakkam">
+                                                    <label class="form-check-label" for="kovilambakkam">Kovilambakkam</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Madipakkam" id="madipakkam">
+                                                    <label class="form-check-label" for="madipakkam">Madipakkam</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Manapakkam" id="manapakkam">
+                                                    <label class="form-check-label" for="manapakkam">Manapakkam</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Nanganallur" id="nanganallur">
+                                                    <label class="form-check-label" for="nanganallur">Nanganallur</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Neelankarai" id="neelankarai">
+                                                    <label class="form-check-label" for="neelankarai">Neelankarai</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Palavakkam" id="palavakkam">
+                                                    <label class="form-check-label" for="palavakkam">Palavakkam</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Perumbakkam" id="perumbakkam">
+                                                    <label class="form-check-label" for="perumbakkam">Perumbakkam</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Sembakkam" id="sembakkam">
+                                                    <label class="form-check-label" for="sembakkam">Sembakkam</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Selaiyur" id="selaiyur">
+                                                    <label class="form-check-label" for="selaiyur">Selaiyur</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Sithalapakkam" id="sithalapakkam">
+                                                    <label class="form-check-label" for="sithalapakkam">Sithalapakkam</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="St. Thomas Mount" id="stthomasmount">
+                                                    <label class="form-check-label" for="stthomasmount">St. Thomas Mount</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Ullagaram-Puzhuthivakkam" id="ullagrampuzhuthivakkam">
+                                                    <label class="form-check-label" for="ullagrampuzhuthivakkam">Ullagaram-Puzhuthivakkam</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Guindy Industrial Estate" id="guindyindustrial">
+                                                    <label class="form-check-label" for="guindyindustrial">Guindy Industrial Estate</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Kottur" id="kottur">
+                                                    <label class="form-check-label" for="kottur">Kottur</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Kovur" id="kovur">
+                                                    <label class="form-check-label" for="kovur">Kovur</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="MEPZ (Madras Export Processing Zone)" id="mepz">
+                                                    <label class="form-check-label" for="mepz">MEPZ (Madras Export Processing Zone)</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Nanmangalam" id="nanmangalam">
+                                                    <label class="form-check-label" for="nanmangalam">Nanmangalam</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Puzhuthivakkam" id="puzhuthivakkam">
+                                                    <label class="form-check-label" for="puzhuthivakkam">Puzhuthivakkam</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="SIPCOT IT Park" id="sipcotitpark">
+                                                    <label class="form-check-label" for="sipcotitpark">SIPCOT IT Park</label>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-
+                                    
                                     <!-- North Chennai -->
-                                    <div class="col-md-3">
-                                        <h6 class="text-info"><i class="fas fa-industry"></i> North Chennai</h6>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Ambattur" id="ambattur">
-                                            <label class="form-check-label" for="ambattur">Ambattur</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Avadi" id="avadi">
-                                            <label class="form-check-label" for="avadi">Avadi</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Red Hills" id="redhills">
-                                            <label class="form-check-label" for="redhills">Red Hills</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Madhavaram" id="madhavaram">
-                                            <label class="form-check-label" for="madhavaram">Madhavaram</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Perambur" id="perambur">
-                                            <label class="form-check-label" for="perambur">Perambur</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Kolathur" id="kolathur">
-                                            <label class="form-check-label" for="kolathur">Kolathur</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Villivakkam" id="villivakkam">
-                                            <label class="form-check-label" for="villivakkam">Villivakkam</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Thirumullaivoyal" id="thirumullaivoyal">
-                                            <label class="form-check-label" for="thirumullaivoyal">Thirumullaivoyal</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Poonamallee" id="poonamallee">
-                                            <label class="form-check-label" for="poonamallee">Poonamallee</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Manali" id="manali">
-                                            <label class="form-check-label" for="manali">Manali</label>
-                                        </div>
-                                        <!-- Missing North Chennai areas -->
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Ayanavaram" id="ayanavaram">
-                                            <label class="form-check-label" for="ayanavaram">Ayanavaram</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Choolai" id="choolai">
-                                            <label class="form-check-label" for="choolai">Choolai</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Ennore" id="ennore">
-                                            <label class="form-check-label" for="ennore">Ennore</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Korattur" id="korattur">
-                                            <label class="form-check-label" for="korattur">Korattur</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Korukkupet" id="korukkupet">
-                                            <label class="form-check-label" for="korukkupet">Korukkupet</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="MKB Nagar (Vyasarpadi)" id="mkbnagar">
-                                            <label class="form-check-label" for="mkbnagar">MKB Nagar (Vyasarpadi)</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Moolakadai" id="moolakadai">
-                                            <label class="form-check-label" for="moolakadai">Moolakadai</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Old Washermanpet" id="oldwashermanpet">
-                                            <label class="form-check-label" for="oldwashermanpet">Old Washermanpet</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Padi" id="padi">
-                                            <label class="form-check-label" for="padi">Padi</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Pulianthope" id="pulianthope">
-                                            <label class="form-check-label" for="pulianthope">Pulianthope</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Royapuram" id="royapuram">
-                                            <label class="form-check-label" for="royapuram">Royapuram</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Sowcarpet" id="sowcarpet">
-                                            <label class="form-check-label" for="sowcarpet">Sowcarpet</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Tondiarpet" id="tondiarpet">
-                                            <label class="form-check-label" for="tondiarpet">Tondiarpet</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Vyasarpadi" id="vyasarpadi">
-                                            <label class="form-check-label" for="vyasarpadi">Vyasarpadi</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Washermanpet" id="washermanpet">
-                                            <label class="form-check-label" for="washermanpet">Washermanpet</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Ambattur Industrial Estate" id="ambatturindustrial">
-                                            <label class="form-check-label" for="ambatturindustrial">Ambattur Industrial Estate</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Madhavaram Milk Colony" id="madhavaramcolony">
-                                            <label class="form-check-label" for="madhavaramcolony">Madhavaram Milk Colony</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Thiruvottiyur" id="thiruvottiyur">
-                                            <label class="form-check-label" for="thiruvottiyur">Thiruvottiyur</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Thiruninravur" id="thiruninravur">
-                                            <label class="form-check-label" for="thiruninravur">Thiruninravur</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="V.O.C. Nagar" id="vocnagar">
-                                            <label class="form-check-label" for="vocnagar">V.O.C. Nagar</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Jamalia" id="jamalia">
-                                            <label class="form-check-label" for="jamalia">Jamalia</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Thiru. Vi. Ka. Nagar" id="thiruvikanagar">
-                                            <label class="form-check-label" for="thiruvikanagar">Thiru. Vi. Ka. Nagar</label>
+                                    <div class="tab-pane fade" id="north" role="tabpanel">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <h6 class="text-info"><i class="fas fa-industry"></i> North Chennai</h6>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Ambattur" id="ambattur">
+                                                    <label class="form-check-label" for="ambattur">Ambattur</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Avadi" id="avadi">
+                                                    <label class="form-check-label" for="avadi">Avadi</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Red Hills" id="redhills">
+                                                    <label class="form-check-label" for="redhills">Red Hills</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Madhavaram" id="madhavaram">
+                                                    <label class="form-check-label" for="madhavaram">Madhavaram</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Perambur" id="perambur">
+                                                    <label class="form-check-label" for="perambur">Perambur</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Kolathur" id="kolathur">
+                                                    <label class="form-check-label" for="kolathur">Kolathur</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Villivakkam" id="villivakkam">
+                                                    <label class="form-check-label" for="villivakkam">Villivakkam</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Thirumullaivoyal" id="thirumullaivoyal">
+                                                    <label class="form-check-label" for="thirumullaivoyal">Thirumullaivoyal</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Poonamallee" id="poonamallee">
+                                                    <label class="form-check-label" for="poonamallee">Poonamallee</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Manali" id="manali">
+                                                    <label class="form-check-label" for="manali">Manali</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Ayanavaram" id="ayanavaram">
+                                                    <label class="form-check-label" for="ayanavaram">Ayanavaram</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Choolai" id="choolai">
+                                                    <label class="form-check-label" for="choolai">Choolai</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Ennore" id="ennore">
+                                                    <label class="form-check-label" for="ennore">Ennore</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Korattur" id="korattur">
+                                                    <label class="form-check-label" for="korattur">Korattur</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Korukkupet" id="korukkupet">
+                                                    <label class="form-check-label" for="korukkupet">Korukkupet</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <h6 class="text-info"><i class="fas fa-industry"></i> North Chennai (cont.)</h6>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="MKB Nagar (Vyasarpadi)" id="mkbnagar">
+                                                    <label class="form-check-label" for="mkbnagar">MKB Nagar (Vyasarpadi)</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Moolakadai" id="moolakadai">
+                                                    <label class="form-check-label" for="moolakadai">Moolakadai</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Old Washermanpet" id="oldwashermanpet">
+                                                    <label class="form-check-label" for="oldwashermanpet">Old Washermanpet</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Padi" id="padi">
+                                                    <label class="form-check-label" for="padi">Padi</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Pulianthope" id="pulianthope">
+                                                    <label class="form-check-label" for="pulianthope">Pulianthope</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Royapuram" id="royapuram">
+                                                    <label class="form-check-label" for="royapuram">Royapuram</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Sowcarpet" id="sowcarpet">
+                                                    <label class="form-check-label" for="sowcarpet">Sowcarpet</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Tondiarpet" id="tondiarpet">
+                                                    <label class="form-check-label" for="tondiarpet">Tondiarpet</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Vyasarpadi" id="vyasarpadi">
+                                                    <label class="form-check-label" for="vyasarpadi">Vyasarpadi</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Washermanpet" id="washermanpet">
+                                                    <label class="form-check-label" for="washermanpet">Washermanpet</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Ambattur Industrial Estate" id="ambatturindustrial">
+                                                    <label class="form-check-label" for="ambatturindustrial">Ambattur Industrial Estate</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Madhavaram Milk Colony" id="madhavaramcolony">
+                                                    <label class="form-check-label" for="madhavaramcolony">Madhavaram Milk Colony</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Thiruvottiyur" id="thiruvottiyur">
+                                                    <label class="form-check-label" for="thiruvottiyur">Thiruvottiyur</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Thiruninravur" id="thiruninravur">
+                                                    <label class="form-check-label" for="thiruninravur">Thiruninravur</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="V.O.C. Nagar" id="vocnagar">
+                                                    <label class="form-check-label" for="vocnagar">V.O.C. Nagar</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Jamalia" id="jamalia">
+                                                    <label class="form-check-label" for="jamalia">Jamalia</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Thiru. Vi. Ka. Nagar" id="thiruvikanagar">
+                                                    <label class="form-check-label" for="thiruvikanagar">Thiru. Vi. Ka. Nagar</label>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
-
+                                    
                                     <!-- West Chennai -->
-                                    <div class="col-md-3">
-                                        <h6 class="text-warning"><i class="fas fa-home"></i> West Chennai</h6>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Porur" id="porur">
-                                            <label class="form-check-label" for="porur">Porur</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Chromepet" id="chromepet">
-                                            <label class="form-check-label" for="chromepet">Chromepet</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Pallavaram" id="pallavaram">
-                                            <label class="form-check-label" for="pallavaram">Pallavaram</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Ashok Nagar" id="ashoknagar">
-                                            <label class="form-check-label" for="ashoknagar">Ashok Nagar</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="KK Nagar" id="kknagar">
-                                            <label class="form-check-label" for="kknagar">KK Nagar</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="West Mambalam" id="westmambalam">
-                                            <label class="form-check-label" for="westmambalam">West Mambalam</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Saidapet" id="saidapet">
-                                            <label class="form-check-label" for="saidapet">Saidapet</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Meenambakkam" id="meenambakkam">
-                                            <label class="form-check-label" for="meenambakkam">Meenambakkam</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Mangadu" id="mangadu">
-                                            <label class="form-check-label" for="mangadu">Mangadu</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Kundrathur" id="kundrathur">
-                                            <label class="form-check-label" for="kundrathur">Kundrathur</label>
-                                        </div>
-                                        <!-- Missing West Chennai areas -->
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Alandur" id="alandur">
-                                            <label class="form-check-label" for="alandur">Alandur</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Alwarthirunagar" id="alwarthirunagar">
-                                            <label class="form-check-label" for="alwarthirunagar">Alwarthirunagar</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Ayyappanthangal" id="ayyappanthangal">
-                                            <label class="form-check-label" for="ayyappanthangal">Ayyappanthangal</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Ekkaduthangal" id="ekkaduthangal">
-                                            <label class="form-check-label" for="ekkaduthangal">Ekkaduthangal</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Iyyapanthangal" id="iyyapanthangal">
-                                            <label class="form-check-label" for="iyyapanthangal">Iyyapanthangal</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Jafferkhanpet" id="jafferkhanpet">
-                                            <label class="form-check-label" for="jafferkhanpet">Jafferkhanpet</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Karapakkam" id="karapakkam">
-                                            <label class="form-check-label" for="karapakkam">Karapakkam</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Kattupakkam" id="kattupakkam">
-                                            <label class="form-check-label" for="kattupakkam">Kattupakkam</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Maduravoyal" id="maduravoyal">
-                                            <label class="form-check-label" for="maduravoyal">Maduravoyal</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Mogappair" id="mogappair">
-                                            <label class="form-check-label" for="mogappair">Mogappair</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Nesapakkam" id="nesapakkam">
-                                            <label class="form-check-label" for="nesapakkam">Nesapakkam</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Nolambur" id="nolambur">
-                                            <label class="form-check-label" for="nolambur">Nolambur</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Ramapuram" id="ramapuram">
-                                            <label class="form-check-label" for="ramapuram">Ramapuram</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Saligramam" id="saligramam">
-                                            <label class="form-check-label" for="saligramam">Saligramam</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Thirumangalam" id="thirumangalam">
-                                            <label class="form-check-label" for="thirumangalam">Thirumangalam</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Valasaravakkam" id="valasaravakkam">
-                                            <label class="form-check-label" for="valasaravakkam">Valasaravakkam</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Vanagaram" id="vanagaram">
-                                            <label class="form-check-label" for="vanagaram">Vanagaram</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Virugambakkam" id="virugambakkam">
-                                            <label class="form-check-label" for="virugambakkam">Virugambakkam</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Gerugambakkam" id="gerugambakkam">
-                                            <label class="form-check-label" for="gerugambakkam">Gerugambakkam</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Mugalivakkam" id="mugalivakkam">
-                                            <label class="form-check-label" for="mugalivakkam">Mugalivakkam</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Karambakkam" id="karambakkam">
-                                            <label class="form-check-label" for="karambakkam">Karambakkam</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Nerkundram" id="nerkundram">
-                                            <label class="form-check-label" for="nerkundram">Nerkundram</label>
-                                        </div>
-                                    </div>
-                                </div>
-
-                                <!-- Additional Areas -->
-                                <div class="row mt-3">
-                                    <div class="col-md-3">
-                                        <h6 class="text-danger"><i class="fas fa-star"></i> IT Corridor</h6>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Thoraipakkam" id="thoraipakkam">
-                                            <label class="form-check-label" for="thoraipakkam">Thoraipakkam</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Navalur" id="navalur">
-                                            <label class="form-check-label" for="navalur">Navalur</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Siruseri" id="siruseri">
-                                            <label class="form-check-label" for="siruseri">Siruseri</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Kelambakkam" id="kelambakkam">
-                                            <label class="form-check-label" for="kelambakkam">Kelambakkam</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Medavakkam" id="medavakkam">
-                                            <label class="form-check-label" for="medavakkam">Medavakkam</label>
+                                    <div class="tab-pane fade" id="west" role="tabpanel">
+                                        <div class="row">
+                                            <div class="col-md-6">
+                                                <h6 class="text-warning"><i class="fas fa-home"></i> West Chennai</h6>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Porur" id="porur">
+                                                    <label class="form-check-label" for="porur">Porur</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Chromepet" id="chromepet">
+                                                    <label class="form-check-label" for="chromepet">Chromepet</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Pallavaram" id="pallavaram">
+                                                    <label class="form-check-label" for="pallavaram">Pallavaram</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Ashok Nagar" id="ashoknagar">
+                                                    <label class="form-check-label" for="ashoknagar">Ashok Nagar</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="KK Nagar" id="kknagar">
+                                                    <label class="form-check-label" for="kknagar">KK Nagar</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="West Mambalam" id="westmambalam">
+                                                    <label class="form-check-label" for="westmambalam">West Mambalam</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Saidapet" id="saidapet">
+                                                    <label class="form-check-label" for="saidapet">Saidapet</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Meenambakkam" id="meenambakkam">
+                                                    <label class="form-check-label" for="meenambakkam">Meenambakkam</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Mangadu" id="mangadu">
+                                                    <label class="form-check-label" for="mangadu">Mangadu</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Kundrathur" id="kundrathur">
+                                                    <label class="form-check-label" for="kundrathur">Kundrathur</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Alandur" id="alandur">
+                                                    <label class="form-check-label" for="alandur">Alandur</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Alwarthirunagar" id="alwarthirunagar">
+                                                    <label class="form-check-label" for="alwarthirunagar">Alwarthirunagar</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Ayyappanthangal" id="ayyappanthangal">
+                                                    <label class="form-check-label" for="ayyappanthangal">Ayyappanthangal</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Ekkaduthangal" id="ekkaduthangal">
+                                                    <label class="form-check-label" for="ekkaduthangal">Ekkaduthangal</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Iyyapanthangal" id="iyyapanthangal">
+                                                    <label class="form-check-label" for="iyyapanthangal">Iyyapanthangal</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <h6 class="text-warning"><i class="fas fa-home"></i> West Chennai (cont.)</h6>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Jafferkhanpet" id="jafferkhanpet">
+                                                    <label class="form-check-label" for="jafferkhanpet">Jafferkhanpet</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Karapakkam" id="karapakkam">
+                                                    <label class="form-check-label" for="karapakkam">Karapakkam</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Kattupakkam" id="kattupakkam">
+                                                    <label class="form-check-label" for="kattupakkam">Kattupakkam</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Maduravoyal" id="maduravoyal">
+                                                    <label class="form-check-label" for="maduravoyal">Maduravoyal</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Mogappair" id="mogappair">
+                                                    <label class="form-check-label" for="mogappair">Mogappair</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Nesapakkam" id="nesapakkam">
+                                                    <label class="form-check-label" for="nesapakkam">Nesapakkam</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Nolambur" id="nolambur">
+                                                    <label class="form-check-label" for="nolambur">Nolambur</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Ramapuram" id="ramapuram">
+                                                    <label class="form-check-label" for="ramapuram">Ramapuram</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Saligramam" id="saligramam">
+                                                    <label class="form-check-label" for="saligramam">Saligramam</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Thirumangalam" id="thirumangalam">
+                                                    <label class="form-check-label" for="thirumangalam">Thirumangalam</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Valasaravakkam" id="valasaravakkam">
+                                                    <label class="form-check-label" for="valasaravakkam">Valasaravakkam</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Vanagaram" id="vanagaram">
+                                                    <label class="form-check-label" for="vanagaram">Vanagaram</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Virugambakkam" id="virugambakkam">
+                                                    <label class="form-check-label" for="virugambakkam">Virugambakkam</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Gerugambakkam" id="gerugambakkam">
+                                                    <label class="form-check-label" for="gerugambakkam">Gerugambakkam</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Mugalivakkam" id="mugalivakkam">
+                                                    <label class="form-check-label" for="mugalivakkam">Mugalivakkam</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Karambakkam" id="karambakkam">
+                                                    <label class="form-check-label" for="karambakkam">Karambakkam</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Nerkundram" id="nerkundram">
+                                                    <label class="form-check-label" for="nerkundram">Nerkundram</label>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
+                                    
+                                    <!-- Special Areas -->
+                                    <div class="tab-pane fade" id="special" role="tabpanel">
+                                        <div class="row">
+                                            <div class="col-md-3">
+                                                <h6 class="text-danger"><i class="fas fa-star"></i> IT Corridor</h6>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Thoraipakkam" id="thoraipakkam">
+                                                    <label class="form-check-label" for="thoraipakkam">Thoraipakkam</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Navalur" id="navalur">
+                                                    <label class="form-check-label" for="navalur">Navalur</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Siruseri" id="siruseri">
+                                                    <label class="form-check-label" for="siruseri">Siruseri</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Kelambakkam" id="kelambakkam">
+                                                    <label class="form-check-label" for="kelambakkam">Kelambakkam</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Medavakkam" id="medavakkam">
+                                                    <label class="form-check-label" for="medavakkam">Medavakkam</label>
+                                                </div>
+                                            </div>
 
-                                    <div class="col-md-3">
-                                        <h6 class="text-secondary"><i class="fas fa-map"></i> Outer Areas</h6>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Chengalpattu" id="chengalpattu">
-                                            <label class="form-check-label" for="chengalpattu">Chengalpattu</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Kancheepuram" id="kancheepuram">
-                                            <label class="form-check-label" for="kancheepuram">Kancheepuram</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Maraimalai Nagar" id="maraimalainagar">
-                                            <label class="form-check-label" for="maraimalainagar">Maraimalai Nagar</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Vandalur" id="vandalur">
-                                            <label class="form-check-label" for="vandalur">Vandalur</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Urapakkam" id="urapakkam">
-                                            <label class="form-check-label" for="urapakkam">Urapakkam</label>
-                                        </div>
-                                    </div>
+                                            <div class="col-md-3">
+                                                <h6 class="text-secondary"><i class="fas fa-map"></i> Outer Areas</h6>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Chengalpattu" id="chengalpattu">
+                                                    <label class="form-check-label" for="chengalpattu">Chengalpattu</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Kancheepuram" id="kancheepuram">
+                                                    <label class="form-check-label" for="kancheepuram">Kancheepuram</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Maraimalai Nagar" id="maraimalainagar">
+                                                    <label class="form-check-label" for="maraimalainagar">Maraimalai Nagar</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Vandalur" id="vandalur">
+                                                    <label class="form-check-label" for="vandalur">Vandalur</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Urapakkam" id="urapakkam">
+                                                    <label class="form-check-label" for="urapakkam">Urapakkam</label>
+                                                </div>
+                                            </div>
 
-                                    <div class="col-md-3">
-                                        <h6 class="text-dark"><i class="fas fa-city"></i> City Center</h6>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="George Town" id="georgetown">
-                                            <label class="form-check-label" for="georgetown">George Town</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Parrys Corner" id="parrysc">
-                                            <label class="form-check-label" for="parrysc">Parrys Corner</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Mount Road" id="mountroad">
-                                            <label class="form-check-label" for="mountroad">Mount Road</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Triplicane" id="triplicane">
-                                            <label class="form-check-label" for="triplicane">Triplicane</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Fort St. George" id="fortstgeorge">
-                                            <label class="form-check-label" for="fortstgeorge">Fort St. George</label>
-                                        </div>
-                                    </div>
+                                            <div class="col-md-3">
+                                                <h6 class="text-dark"><i class="fas fa-city"></i> City Center</h6>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="George Town" id="georgetown">
+                                                    <label class="form-check-label" for="georgetown">George Town</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Parrys Corner" id="parrysc">
+                                                    <label class="form-check-label" for="parrysc">Parrys Corner</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Mount Road" id="mountroad">
+                                                    <label class="form-check-label" for="mountroad">Mount Road</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Triplicane" id="triplicane">
+                                                    <label class="form-check-label" for="triplicane">Triplicane</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Fort St. George" id="fortstgeorge">
+                                                    <label class="form-check-label" for="fortstgeorge">Fort St. George</label>
+                                                </div>
+                                            </div>
 
-                                    <div class="col-md-3">
-                                        <h6 class="text-muted"><i class="fas fa-plus"></i> Additional Areas</h6>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="ECR" id="ecr">
-                                            <label class="form-check-label" for="ecr">ECR (East Coast Road)</label>
+                                            <div class="col-md-3">
+                                                <h6 class="text-muted"><i class="fas fa-plus"></i> Additional Areas</h6>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="ECR" id="ecr">
+                                                    <label class="form-check-label" for="ecr">ECR (East Coast Road)</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="GST Road" id="gstroad">
+                                                    <label class="form-check-label" for="gstroad">GST Road</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Rajiv Gandhi Salai" id="rajivgandhisalai">
+                                                    <label class="form-check-label" for="rajivgandhisalai">Rajiv Gandhi Salai</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Mahindra City" id="mahindra">
+                                                    <label class="form-check-label" for="mahindra">Mahindra City</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Mahabalipuram" id="mahabalipuram">
+                                                    <label class="form-check-label" for="mahabalipuram">Mahabalipuram</label>
+                                                </div>
+                                            </div>
                                         </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="GST Road" id="gstroad">
-                                            <label class="form-check-label" for="gstroad">GST Road</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Rajiv Gandhi Salai" id="rajivgandhisalai">
-                                            <label class="form-check-label" for="rajivgandhisalai">Rajiv Gandhi Salai</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Mahindra City" id="mahindra">
-                                            <label class="form-check-label" for="mahindra">Mahindra City</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Mahabalipuram" id="mahabalipuram">
-                                            <label class="form-check-label" for="mahabalipuram">Mahabalipuram</label>
-                                        </div>
-                                    </div>
-                                </div>
+                                        
+                                        <div class="row mt-3">
+                                            <div class="col-md-3">
+                                                <h6 class="text-purple"><i class="fas fa-map-signs"></i> Suburban Areas</h6>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Annanur" id="annanur">
+                                                    <label class="form-check-label" for="annanur">Annanur</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Guduvancheri" id="guduvancheri">
+                                                    <label class="form-check-label" for="guduvancheri">Guduvancheri</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Irumbuliyur" id="irumbuliyur">
+                                                    <label class="form-check-label" for="irumbuliyur">Irumbuliyur</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Madambakkam" id="madambakkam">
+                                                    <label class="form-check-label" for="madambakkam">Madambakkam</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Manali New Town" id="manalinewtown">
+                                                    <label class="form-check-label" for="manalinewtown">Manali New Town</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Mathur" id="mathur">
+                                                    <label class="form-check-label" for="mathur">Mathur</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Moulivakkam" id="moulivakkam">
+                                                    <label class="form-check-label" for="moulivakkam">Moulivakkam</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Oragadam" id="oragadam">
+                                                    <label class="form-check-label" for="oragadam">Oragadam</label>
+                                                </div>
+                                            </div>
 
-                                <!-- Additional Missing Areas -->
-                                <div class="row mt-3">
-                                    <div class="col-md-3">
-                                        <h6 class="text-purple"><i class="fas fa-map-signs"></i> Suburban Areas</h6>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Annanur" id="annanur">
-                                            <label class="form-check-label" for="annanur">Annanur</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Guduvancheri" id="guduvancheri">
-                                            <label class="form-check-label" for="guduvancheri">Guduvancheri</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Irumbuliyur" id="irumbuliyur">
-                                            <label class="form-check-label" for="irumbuliyur">Irumbuliyur</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Madambakkam" id="madambakkam">
-                                            <label class="form-check-label" for="madambakkam">Madambakkam</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Manali New Town" id="manalinewtown">
-                                            <label class="form-check-label" for="manalinewtown">Manali New Town</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Mathur" id="mathur">
-                                            <label class="form-check-label" for="mathur">Mathur</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Moulivakkam" id="moulivakkam">
-                                            <label class="form-check-label" for="moulivakkam">Moulivakkam</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Oragadam" id="oragadam">
-                                            <label class="form-check-label" for="oragadam">Oragadam</label>
-                                        </div>
-                                    </div>
+                                            <div class="col-md-3">
+                                                <h6 class="text-brown"><i class="fas fa-road"></i> Extended Areas</h6>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Pammal" id="pammal">
+                                                    <label class="form-check-label" for="pammal">Pammal</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Pattabiram" id="pattabiram">
+                                                    <label class="form-check-label" for="pattabiram">Pattabiram</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Pattaravakkam" id="pattaravakkam">
+                                                    <label class="form-check-label" for="pattaravakkam">Pattaravakkam</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Pazhavanthangal" id="pazhavanthangal">
+                                                    <label class="form-check-label" for="pazhavanthangal">Pazhavanthangal</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Perungalathur" id="perungalathur">
+                                                    <label class="form-check-label" for="perungalathur">Perungalathur</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Pozhichalur" id="pozhichalur">
+                                                    <label class="form-check-label" for="pozhichalur">Pozhichalur</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Singaperumal Koil" id="singaperumalkoil">
+                                                    <label class="form-check-label" for="singaperumalkoil">Singaperumal Koil</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Sriperumbudur" id="sriperumbudur">
+                                                    <label class="form-check-label" for="sriperumbudur">Sriperumbudur</label>
+                                                </div>
+                                            </div>
 
-                                    <div class="col-md-3">
-                                        <h6 class="text-brown"><i class="fas fa-road"></i> Extended Areas</h6>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Pammal" id="pammal">
-                                            <label class="form-check-label" for="pammal">Pammal</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Pattabiram" id="pattabiram">
-                                            <label class="form-check-label" for="pattabiram">Pattabiram</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Pattaravakkam" id="pattaravakkam">
-                                            <label class="form-check-label" for="pattaravakkam">Pattaravakkam</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Pazhavanthangal" id="pazhavanthangal">
-                                            <label class="form-check-label" for="pazhavanthangal">Pazhavanthangal</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Perungalathur" id="perungalathur">
-                                            <label class="form-check-label" for="perungalathur">Perungalathur</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Pozhichalur" id="pozhichalur">
-                                            <label class="form-check-label" for="pozhichalur">Pozhichalur</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Singaperumal Koil" id="singaperumalkoil">
-                                            <label class="form-check-label" for="singaperumalkoil">Singaperumal Koil</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Sriperumbudur" id="sriperumbudur">
-                                            <label class="form-check-label" for="sriperumbudur">Sriperumbudur</label>
-                                        </div>
-                                    </div>
+                                            <div class="col-md-3">
+                                                <h6 class="text-teal"><i class="fas fa-temple-hindu"></i> Temple Areas</h6>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Thirumazhisai" id="thirumazhisai">
+                                                    <label class="form-check-label" for="thirumazhisai">Thirumazhisai</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Thiruneermalai" id="thiruneermalai">
+                                                    <label class="form-check-label" for="thiruneermalai">Thiruneermalai</label>
+                                                </div>
+                                                <div class="form-check">
+                                                    <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Thiruverkadu" id="thiruverkadu">
+                                                    <label class="form-check-label" for="thiruverkadu">Thiruverkadu</label>
+                                                </div>
+                                            </div>
 
-                                    <div class="col-md-3">
-                                        <h6 class="text-teal"><i class="fas fa-temple-hindu"></i> Temple Areas</h6>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Thirumazhisai" id="thirumazhisai">
-                                            <label class="form-check-label" for="thirumazhisai">Thirumazhisai</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Thiruneermalai" id="thiruneermalai">
-                                            <label class="form-check-label" for="thiruneermalai">Thiruneermalai</label>
-                                        </div>
-                                        <div class="form-check">
-                                            <input class="form-check-input area-checkbox" type="checkbox" name="areas" value="Thiruverkadu" id="thiruverkadu">
-                                            <label class="form-check-label" for="thiruverkadu">Thiruverkadu</label>
-                                        </div>
-                                    </div>
-
-                                    <div class="col-md-3">
-                                        <h6 class="text-indigo"><i class="fas fa-info-circle"></i> Quick Stats</h6>
-                                        <div class="alert alert-info">
-                                            <small>
-                                                <strong>Total Areas:</strong> <span id="totalAreaCount">Loading...</span><br>
-                                                <strong>Selected:</strong> <span id="selectedCount">0 areas selected</span>
-                                            </small>
+                                            <div class="col-md-3">
+                                                <h6 class="text-indigo"><i class="fas fa-info-circle"></i> Quick Stats</h6>
+                                                <div class="alert alert-info">
+                                                    <small>
+                                                        <strong>Total Areas:</strong> <span id="totalAreaCount">Loading...</span><br>
+                                                        <strong>Selected:</strong> <span id="selectedCount">0 areas selected</span>
+                                                    </small>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -879,7 +935,7 @@
                                 </div>
                             </div>
                             <div class="text-end mt-2">
-                                <span class="badge bg-info" id="selectedCount">0 areas selected</span>
+                                <span class="badge bg-info" id="selectedCountBadge">0 areas selected</span>
                             </div>
                         </div>
                     </div>
@@ -918,6 +974,7 @@ function updateSelectedCount() {
     const checkboxes = document.querySelectorAll('.area-checkbox:checked');
     const count = checkboxes.length;
     document.getElementById('selectedCount').textContent = count + ' areas selected';
+    document.getElementById('selectedCountBadge').textContent = count + ' areas selected';
 }
 
 function updateTotalAreaCount() {
@@ -962,19 +1019,19 @@ document.getElementById('chennaiForm').addEventListener('submit', function(e) {
     
     if (selectedAreas.length === 0) {
         e.preventDefault();
-        alert('Please select at least one area to scrape.');
+        showNotification('Please select at least one area to scrape.', 'error');
         return false;
     }
     
     if (!businessType) {
         e.preventDefault();
-        alert('Please select a business type or choose custom keyword.');
+        showNotification('Please select a business type or choose custom keyword.', 'error');
         return false;
     }
     
     if (businessType === 'custom' && !customKeyword) {
         e.preventDefault();
-        alert('Please enter a custom search keyword.');
+        showNotification('Please enter a custom search keyword.', 'error');
         return false;
     }
 });

@@ -386,12 +386,12 @@ def scrape_places(search_for: str, total: int, output_path: str = "result.csv", 
             # Create page with optimized settings
             page = browser.new_page()
             
-            # Disable images and CSS for faster loading (optional - uncomment if needed)
-            # page.route("**/*.{png,jpg,jpeg,gif,svg,css}", lambda route: route.abort())
+            # Disable images and CSS for faster loading
+            page.route("**/*.{png,jpg,jpeg,gif,svg,css}", lambda route: route.abort())
             
-            # Set faster page timeouts
-            page.set_default_timeout(5000)  # 5 second default timeout
-            page.set_default_navigation_timeout(30000)  # 30 second navigation timeout
+            # Set optimized page timeouts
+            page.set_default_timeout(3000)  # Reduced from 5000ms
+            page.set_default_navigation_timeout(20000)  # Reduced from 30000ms
             try:
                 # Faster page load with reduced timeout
                 page.goto("https://www.google.com/maps/@32.9817464,70.1930781,3.67z?", timeout=30000)
@@ -423,9 +423,10 @@ def scrape_places(search_for: str, total: int, output_path: str = "result.csv", 
                 end_of_list_found = False
                 
                 while scroll_attempts < max_scroll_attempts and not end_of_list_found:
-                    # Faster scrolling with bigger increments
-                    page.mouse.wheel(0, 15000)  # Increased from 10000
-                    page.wait_for_timeout(500)  # Reduced from 1000ms
+                    # Dynamic scrolling with network-aware waiting
+                    page.mouse.wheel(0, 20000)  # Larger scroll to reduce iterations
+                    # Wait for network idle instead of fixed delay
+                    page.wait_for_load_state("networkidle", timeout=2000)
                     
                     try:
                         found = page.locator('//a[contains(@href, "https://www.google.com/maps/place")]').count()
@@ -526,7 +527,7 @@ def scrape_places(search_for: str, total: int, output_path: str = "result.csv", 
                             continue
                         
                         # Reduced wait time for page content loading
-                        time.sleep(0.8)  # Reduced from 1.5 seconds
+                        time.sleep(0.5)  # Reduced from 1.5 seconds
                         
                         place = extract_place(page)
                         if place.name:
@@ -534,19 +535,10 @@ def scrape_places(search_for: str, total: int, output_path: str = "result.csv", 
                             scraped_in_session += 1
                             total_scraped += 1
                             
-                            # Optimized batch saving based on mode with ultra-fast options
-                            if scraped_in_session % 10 == 0 or actual_idx == len(listings) - 1:
-                                # Use different saving strategies for maximum performance
-                                if is_append_mode and ultra_fast_append:
-                                    # Ultra-fast: Use batch-optimized for maximum speed
-                                    save_places_to_csv_batch_optimized(places, output_path)
-                                elif is_append_mode:
-                                    # Fast: Use ultra-fast append
-                                    save_places_to_csv_ultra_fast(places, output_path)
-                                else:
-                                    # Regular: Use pandas for first save
-                                    save_places_to_csv(places, output_path, append=False)
-                                    is_append_mode = True  # Switch to append mode after first save
+                            # Optimized batch saving with streaming approach
+                            if scraped_in_session % 20 == 0 or actual_idx == len(listings) - 1:
+                                # Use streaming CSV writing for maximum performance
+                                save_places_to_csv_streaming(places, output_path, append=is_append_mode)
                                 places = []  # Clear list to save memory
                                 
                                 # Update cache
@@ -563,12 +555,7 @@ def scrape_places(search_for: str, total: int, output_path: str = "result.csv", 
                         logging.info("🛑 SCRAPING INTERRUPTED BY USER")
                         # Ultra-fast save current progress before exiting
                         if places:
-                            if is_append_mode and ultra_fast_append:
-                                save_places_to_csv_batch_optimized(places, output_path)
-                            elif is_append_mode:
-                                save_places_to_csv_ultra_fast(places, output_path)
-                            else:
-                                save_places_to_csv(places, output_path, append=False)
+                            save_places_to_csv_streaming(places, output_path, append=is_append_mode)
                         cache_manager.save_cache(
                             search_for, output_path, total, 
                             total_scraped, actual_idx
@@ -674,6 +661,36 @@ def save_places_to_csv_batch_optimized(places: List[Place], output_path: str = "
     output_buffer.close()
     logging.info(f"🚀 Batch-optimized saved {len(places)} places to {output_path}")
 
+def save_places_to_csv_streaming(places: List[Place], output_path: str = "result.csv", append: bool = True):
+    """Streaming CSV writing with buffered I/O for maximum performance"""
+    if not places:
+        return
+    
+    import csv
+    import io
+    
+    file_exists = os.path.isfile(output_path)
+    mode = "a" if append and file_exists else "w"
+    
+    output_buffer = io.StringIO()
+    
+    if not file_exists or not append:
+        fieldnames = list(asdict(places[0]).keys())
+        writer = csv.DictWriter(output_buffer, fieldnames=fieldnames)
+        writer.writeheader()
+    
+    fieldnames = list(asdict(places[0]).keys())
+    writer = csv.DictWriter(output_buffer, fieldnames=fieldnames)
+    
+    for place in places:
+        writer.writerow(asdict(place))
+    
+    with open(output_path, mode, newline='', encoding='utf-8') as csvfile:
+        csvfile.write(output_buffer.getvalue())
+    
+    output_buffer.close()
+    logging.info(f"💾 Saved {len(places)} places to {output_path} (append={append})")
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("-s", "--search", type=str, help="Search query for Google Maps")
@@ -707,10 +724,7 @@ def main():
     
     # Only save remaining places if any (batch saving already handled most)
     if places:
-        if ultra_fast:
-            save_places_to_csv_batch_optimized(places, output_path)
-        else:
-            save_places_to_csv(places, output_path, append=append)
+        save_places_to_csv_streaming(places, output_path, append=append)
 
 if __name__ == "__main__":
     main()

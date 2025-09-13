@@ -9,9 +9,12 @@ import uuid
 import hashlib
 import logging
 from main import CacheManager  # Import our cache manager
+from flask_socketio import SocketIO, emit
+from collections import OrderedDict
 
 app = Flask(__name__)
 app.secret_key = 'your-secret-key-here'
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 # Store running jobs
 running_jobs = {}
@@ -21,11 +24,32 @@ import json
 import mmap
 import struct
 import time
-from collections import defaultdict
+from collections import defaultdict, OrderedDict
 import sqlite3
 import pickle
 
-# Global caches for ultra-fast duplicate checking
+class LRUCache:
+    def __init__(self, max_size=100):
+        self.cache = OrderedDict()
+        self.max_size = max_size
+    
+    def get(self, key):
+        if key in self.cache:
+            self.cache.move_to_end(key)
+            return self.cache[key]
+        return None
+    
+    def put(self, key, value):
+        if key in self.cache:
+            self.cache.move_to_end(key)
+        elif len(self.cache) >= self.max_size:
+            self.cache.popitem(last=False)
+        self.cache[key] = value
+
+# Single consolidated cache for duplicate checking
+_duplicate_cache = LRUCache(max_size=200)
+
+# Global caches for ultra-fast duplicate checking (deprecated - kept for backward compatibility)
 _file_signature_cache = {}
 _content_hash_cache = {}
 _metadata_cache = {}
@@ -142,7 +166,7 @@ def build_file_index(output_file, force_rebuild=False):
         return None
 
 def check_duplicate_file(business_type, areas, output_file):
-    """Ultra-optimized duplicate check with multiple algorithm layers"""
+    """Simplified duplicate check with consolidated cache"""
     if not os.path.exists(output_file):
         return False, None
     
@@ -151,30 +175,28 @@ def check_duplicate_file(business_type, areas, output_file):
         if file_size == 0:
             return False, None
         
-        # Layer 0: Instant index-based check (nanoseconds)
-        is_duplicate_idx, count_idx = _check_index_based_duplicate(output_file, business_type, areas)
-        if is_duplicate_idx is not None:
-            return is_duplicate_idx, count_idx
+        # Check consolidated cache first
+        cache_key = f"{output_file}:{file_size}:{business_type.lower()}"
+        cached_result = _duplicate_cache.get(cache_key)
+        if cached_result is not None:
+            return cached_result['is_duplicate'], cached_result['count']
         
-        # Layer 1: Lightning-fast file signature check (microseconds)
-        is_duplicate_sig, count_sig = _check_file_signature(output_file, business_type, areas)
-        if is_duplicate_sig is not None:
-            return is_duplicate_sig, count_sig
+        # Use simplified fingerprinting approach
+        is_duplicate, count = _check_content_fingerprint(output_file, business_type, areas, file_size)
         
-        # Layer 2: Hash-based content fingerprinting (milliseconds)
-        is_duplicate_hash, count_hash = _check_content_fingerprint(output_file, business_type, areas, file_size)
-        if is_duplicate_hash is not None:
-            return is_duplicate_hash, count_hash
+        # Cache the result
+        if is_duplicate is not None:
+            _duplicate_cache.put(cache_key, {
+                'is_duplicate': is_duplicate,
+                'count': count
+            })
+            return is_duplicate, count
         
-        # Layer 3: Memory-mapped binary search (fast)
-        if file_size > 10 * 1024 * 1024:  # > 10MB
-            return _check_duplicate_memory_mapped(output_file, business_type, areas, file_size)
-        
-        # Layer 4: Optimized streaming search (medium files)
-        elif file_size > 1024 * 1024:  # > 1MB
+        # Fallback to streaming search for medium files
+        if file_size > 1024 * 1024:  # > 1MB
             return _check_duplicate_streaming(output_file, business_type, areas, file_size)
         
-        # Layer 5: Pandas with caching (small files)
+        # Fallback to pandas for small files
         else:
             return _check_duplicate_cached_pandas(output_file, business_type, areas)
     
@@ -295,22 +317,23 @@ def _check_content_fingerprint(output_file, business_type, areas, file_size):
             cached = _content_hash_cache[fingerprint_key]
             return cached['is_duplicate'], cached['count']
         
-        # Sample specific positions in file for fingerprinting
+        # Sample specific positions in file for fingerprinting with adaptive sampling
         with open(output_file, 'rb') as f:
-            # Sample header (first 512 bytes)
-            header_sample = f.read(512)
+            # Adaptive sample size based on file size
+            sample_size = min(8192, max(1024, file_size // 1000))
+            header_sample = f.read(sample_size)
             
             # Sample middle section
-            if file_size > 1024:
+            if file_size > sample_size * 2:
                 f.seek(file_size // 2)
-                middle_sample = f.read(256)
+                middle_sample = f.read(sample_size // 2)
             else:
                 middle_sample = b''
             
             # Sample end section
-            if file_size > 2048:
-                f.seek(max(file_size - 256, 0))
-                end_sample = f.read(256)
+            if file_size > sample_size * 3:
+                f.seek(max(file_size - (sample_size // 2), 0))
+                end_sample = f.read(sample_size // 2)
             else:
                 end_sample = b''
         
@@ -352,7 +375,7 @@ def _check_duplicate_memory_mapped(output_file, business_type, areas, file_size)
         with open(output_file, 'rb') as f:
             with mmap.mmap(f.fileno(), 0, access=mmap.ACCESS_READ) as mm:
                 # Count total lines using memory mapping
-                total_lines = mm.count(b'\n')
+                total_lines = mm[:].count(b'\n')
                 
                 # Search for business type occurrences using Boyer-Moore-like algorithm
                 search_pos = 0
@@ -589,7 +612,7 @@ def run_scraper(job):
         
         # Monitor progress
         while True:
-            output = process.stdout.readline()
+            output = process.stdout.readline() if process.stdout else ''
             if output == '' and process.poll() is not None:
                 break
             if output:
@@ -598,11 +621,25 @@ def run_scraper(job):
                     try:
                         current = int(output.split("Currently Found:")[1].strip())
                         job.progress = min((current / job.total_results) * 100, 100)
+                        # Emit progress update via SocketIO
+                        socketio.emit('job_update', {
+                            'job_id': job.job_id,
+                            'status': job.status,
+                            'progress': job.progress,
+                            'result_count': job.result_count
+                        })
                     except:
                         pass
                 elif "Total Found:" in output:
                     try:
                         job.result_count = int(output.split("Total Found:")[1].strip())
+                        # Emit progress update via SocketIO
+                        socketio.emit('job_update', {
+                            'job_id': job.job_id,
+                            'status': job.status,
+                            'progress': job.progress,
+                            'result_count': job.result_count
+                        })
                     except:
                         pass
         
@@ -612,12 +649,28 @@ def run_scraper(job):
             job.progress = 100
         else:
             job.status = "failed"
-            stderr = process.stderr.read()
+            stderr = process.stderr.read() if process.stderr else ""
             job.error_message = stderr if stderr else "Unknown error occurred"
+            
+        # Emit final status update via SocketIO
+        socketio.emit('job_update', {
+            'job_id': job.job_id,
+            'status': job.status,
+            'progress': job.progress,
+            'result_count': job.result_count,
+            'error_message': job.error_message,
+            'end_time': job.end_time.strftime('%Y-%m-%d %H:%M:%S') if job.end_time else None
+        })
             
     except Exception as e:
         job.status = "failed"
         job.error_message = str(e)
+        # Emit error update via SocketIO
+        socketio.emit('job_update', {
+            'job_id': job.job_id,
+            'status': job.status,
+            'error_message': job.error_message
+        })
     
     job.end_time = datetime.now()
 
@@ -662,7 +715,7 @@ def run_chennai_scraper(job):
             # Monitor progress for this area
             area_results = 0
             while True:
-                output = process.stdout.readline()
+                output = process.stdout.readline() if process.stdout else ''
                 if output == '' and process.poll() is not None:
                     break
                 if output:
@@ -673,23 +726,59 @@ def run_chennai_scraper(job):
                             # Calculate overall progress
                             total_progress = (job.completed_areas * job.results_per_area + current) / job.total_results
                             job.progress = min(total_progress * 100, 100)
+                            # Emit progress update via SocketIO
+                            socketio.emit('job_update', {
+                                'job_id': job.job_id,
+                                'status': job.status,
+                                'progress': job.progress,
+                                'result_count': job.result_count,
+                                'current_area': job.current_area,
+                                'completed_areas': job.completed_areas,
+                                'total_areas': job.total_areas
+                            })
                         except:
                             pass
                     elif "Total Found:" in output:
                         try:
                             area_results = int(output.split("Total Found:")[1].strip())
+                            job.result_count += area_results
+                            # Emit progress update via SocketIO
+                            socketio.emit('job_update', {
+                                'job_id': job.job_id,
+                                'status': job.status,
+                                'progress': job.progress,
+                                'result_count': job.result_count,
+                                'current_area': job.current_area,
+                                'completed_areas': job.completed_areas,
+                                'total_areas': job.total_areas
+                            })
                         except:
                             pass
             
             # Check if area scraping completed successfully
             if process.returncode == 0:
                 job.completed_areas += 1
-                job.result_count += area_results
                 job.progress = (job.completed_areas / job.total_areas) * 100
+                # Emit progress update via SocketIO
+                socketio.emit('job_update', {
+                    'job_id': job.job_id,
+                    'status': job.status,
+                    'progress': job.progress,
+                    'result_count': job.result_count,
+                    'current_area': job.current_area,
+                    'completed_areas': job.completed_areas,
+                    'total_areas': job.total_areas
+                })
             else:
-                stderr = process.stderr.read()
+                stderr = process.stderr.read() if process.stderr else ""
                 job.error_message = f"Error in area {area}: {stderr if stderr else 'Unknown error'}"
                 job.status = "failed"
+                # Emit error update via SocketIO
+                socketio.emit('job_update', {
+                    'job_id': job.job_id,
+                    'status': job.status,
+                    'error_message': job.error_message
+                })
                 break
             
             first_area = False
@@ -698,10 +787,26 @@ def run_chennai_scraper(job):
         if job.status != "failed":
             job.status = "completed"
             job.progress = 100
+            # Emit final status update via SocketIO
+            socketio.emit('job_update', {
+                'job_id': job.job_id,
+                'status': job.status,
+                'progress': job.progress,
+                'result_count': job.result_count,
+                'completed_areas': job.completed_areas,
+                'total_areas': job.total_areas,
+                'end_time': job.end_time.strftime('%Y-%m-%d %H:%M:%S') if job.end_time else None
+            })
             
     except Exception as e:
         job.status = "failed"
         job.error_message = str(e)
+        # Emit error update via SocketIO
+        socketio.emit('job_update', {
+            'job_id': job.job_id,
+            'status': job.status,
+            'error_message': job.error_message
+        })
     
     job.end_time = datetime.now()
 
@@ -772,7 +877,7 @@ def start_scraping():
         if cache:
             if fast_append:
                 # Ultra-fast mode: use file size estimation instead of counting rows
-                existing_count = cache_manager.get_existing_data_count_fast(output_file)
+                existing_count = cache_manager.get_existing_data_count_lightning(output_file)
             else:
                 existing_count = cache_manager.get_existing_data_count(output_file)
                 
@@ -938,6 +1043,23 @@ def download_results(job_id):
         flash('Output file not found!', 'error')
         return redirect(url_for('index'))
 
+def get_file_preview(file_path, lines=10):
+    """Stream file previews instead of loading entire files"""
+    preview_data = []
+    try:
+        with open(file_path, 'r', encoding='utf-8') as f:
+            header = f.readline().strip()
+            columns = header.split(',')
+            for i, line in enumerate(f):
+                if i >= lines:
+                    break
+                values = line.strip().split(',')
+                preview_data.append(dict(zip(columns, values)))
+        return preview_data
+    except Exception as e:
+        logging.error(f"Error reading file preview: {e}")
+        return []
+
 @app.route('/preview/<job_id>')
 def preview_results(job_id):
     job = running_jobs.get(job_id)
@@ -947,13 +1069,22 @@ def preview_results(job_id):
     file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), job.output_file)
     if os.path.exists(file_path):
         try:
-            df = pd.read_csv(file_path)
-            # Return first 10 rows for preview
-            preview_data = df.head(10).to_dict('records')
+            # Use streaming preview instead of loading entire file
+            preview_data = get_file_preview(file_path, 10)
+            
+            # Get total row count efficiently
+            with open(file_path, 'r', encoding='utf-8') as f:
+                total_rows = sum(1 for _ in f) - 1  # Subtract header
+            
+            # Get columns from header
+            with open(file_path, 'r', encoding='utf-8') as f:
+                header = f.readline().strip()
+                columns = header.split(',')
+            
             return jsonify({
                 'data': preview_data,
-                'total_rows': len(df),
-                'columns': list(df.columns)
+                'total_rows': total_rows,
+                'columns': columns
             })
         except Exception as e:
             return jsonify({'error': f'Error reading file: {str(e)}'}), 500
@@ -968,4 +1099,4 @@ def history():
     return render_template('history.html', jobs=completed_jobs)
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    socketio.run(app, debug=True, host='0.0.0.0', port=5000)

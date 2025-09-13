@@ -3,84 +3,161 @@
 {% block content %}
 <div class="row justify-content-center">
     <div class="col-md-10">
+        <!-- Page header -->
+        <div class="text-center mb-4">
+            <h1 class="text-white fw-bold">Job Monitoring</h1>
+            <p class="text-white-50 mb-0">Track your scraping progress in real-time</p>
+        </div>
+        
         <div class="card">
-            <div class="card-header bg-info text-white">
-                <h4><i class="fas fa-tasks"></i> Scraping Job Monitor</h4>
-                <p class="mb-0">Job ID: {{ job.job_id }}</p>
+            <div class="card-header bg-primary text-white">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h4 class="mb-0"><i class="fas fa-tasks"></i> Scraping Job</h4>
+                        <p class="mb-0 opacity-75">Job ID: {{ job.job_id }}</p>
+                    </div>
+                    <span id="status-badge" class="badge bg-info fs-6">{{ job.status.title() }}</span>
+                </div>
             </div>
             <div class="card-body">
+                <!-- Job information -->
                 <div class="row mb-4">
                     <div class="col-md-6">
-                        <h6><i class="fas fa-search"></i> Search Query:</h6>
+                        <h6><i class="fas fa-search me-2 text-primary"></i> Search Query</h6>
                         <p class="text-muted">{{ job.search_query }}</p>
                     </div>
                     <div class="col-md-3">
-                        <h6><i class="fas fa-list-ol"></i> Target Results:</h6>
+                        <h6><i class="fas fa-list-ol me-2 text-primary"></i> Target Results</h6>
                         <p class="text-muted">{{ job.total_results }}</p>
                     </div>
                     <div class="col-md-3">
-                        <h6><i class="fas fa-file"></i> Output File:</h6>
+                        <h6><i class="fas fa-file me-2 text-primary"></i> Output File</h6>
                         <p class="text-muted">{{ job.output_file }}</p>
                     </div>
                 </div>
 
+                <!-- Enhanced progress visualization -->
                 <div class="mb-4">
                     <div class="d-flex justify-content-between align-items-center mb-2">
-                        <h6><i class="fas fa-chart-line"></i> Progress</h6>
-                        <span id="status-badge" class="badge bg-primary">{{ job.status.title() }}</span>
+                        <h6><i class="fas fa-chart-line me-2 text-primary"></i> Progress</h6>
+                        <span id="progress-text" class="fw-bold">{{ "%.1f"|format(job.progress) }}%</span>
                     </div>
-                    <div class="progress">
+                    <div class="progress mb-2">
                         <div id="progress-bar" 
                              class="progress-bar progress-bar-striped progress-bar-animated" 
                              role="progressbar" 
-                             style="width: {{ job.progress }}%">
-                            <span id="progress-text">{{ "%.1f"|format(job.progress) }}%</span>
+                             data-progress="{{ job.progress }}">
                         </div>
                     </div>
-                    <div class="mt-2">
+                    <div class="d-flex justify-content-between">
                         <small class="text-muted">
                             <span id="result-count">{{ job.result_count }}</span> results found
+                        </small>
+                        <small class="text-muted" id="eta">
+                            <!-- ETA will be calculated and displayed here -->
                         </small>
                     </div>
                 </div>
 
-                <div id="job-info" class="row">
+                <!-- Real-time stats -->
+                <div class="row g-3 mb-4">
                     <div class="col-md-6">
-                        <h6><i class="fas fa-clock"></i> Started:</h6>
-                        <p class="text-muted" id="start-time">{{ job.start_time.strftime('%Y-%m-%d %H:%M:%S') }}</p>
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h6 class="card-title text-primary">
+                                    <i class="fas fa-clock me-2"></i> Started
+                                </h6>
+                                <p class="card-text mb-0" id="start-time">
+                                    {{ job.start_time.strftime('%Y-%m-%d %H:%M:%S') }}
+                                </p>
+                            </div>
+                        </div>
                     </div>
                     <div class="col-md-6">
-                        <h6><i class="fas fa-flag-checkered"></i> Completed:</h6>
-                        <p class="text-muted" id="end-time">
-                            {% if job.end_time %}
-                                {{ job.end_time.strftime('%Y-%m-%d %H:%M:%S') }}
-                            {% else %}
-                                In progress...
-                            {% endif %}
-                        </p>
+                        <div class="card bg-light">
+                            <div class="card-body">
+                                <h6 class="card-title text-primary">
+                                    <i class="fas fa-flag-checkered me-2"></i> Completed
+                                </h6>
+                                <p class="card-text mb-0" id="end-time">
+                                    {% if job.end_time %}
+                                        {{ job.end_time.strftime('%Y-%m-%d %H:%M:%S') }}
+                                    {% else %}
+                                        In progress...
+                                    {% endif %}
+                                </p>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
+                <!-- Error section -->
                 <div id="error-section" class="alert alert-danger d-none">
-                    <h6><i class="fas fa-exclamation-triangle"></i> Error:</h6>
+                    <h6><i class="fas fa-exclamation-triangle me-2"></i> Error</h6>
                     <p id="error-message" class="mb-0"></p>
                 </div>
 
-                <div id="action-buttons" class="mt-4">
+                <!-- Action panel -->
+                <div id="action-buttons" class="d-flex flex-wrap gap-2">
                     {% if job.status == 'completed' %}
                         <a href="{{ url_for('download_results', job_id=job.job_id) }}" 
-                           class="btn btn-success me-2">
-                            <i class="fas fa-download"></i> Download Results
+                           class="btn btn-success">
+                            <i class="fas fa-download me-2"></i> Download Results
                         </a>
                         <button type="button" 
-                                class="btn btn-info me-2" 
+                                class="btn btn-info" 
                                 onclick="previewResults()">
-                            <i class="fas fa-eye"></i> Preview Results
+                            <i class="fas fa-eye me-2"></i> Preview Results
                         </button>
                     {% endif %}
                     <a href="{{ url_for('index') }}" class="btn btn-secondary">
-                        <i class="fas fa-arrow-left"></i> Back to Home
+                        <i class="fas fa-arrow-left me-2"></i> Back to Home
                     </a>
+                </div>
+            </div>
+        </div>
+
+        <!-- Job details card -->
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5><i class="fas fa-info-circle me-2"></i> Job Details</h5>
+            </div>
+            <div class="card-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <tbody>
+                            <tr>
+                                <td><strong>Job ID</strong></td>
+                                <td>{{ job.job_id }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Status</strong></td>
+                                <td><span id="details-status">{{ job.status.title() }}</span></td>
+                            </tr>
+                            <tr>
+                                <td><strong>Search Query</strong></td>
+                                <td>{{ job.search_query }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Target Results</strong></td>
+                                <td>{{ job.total_results }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Output File</strong></td>
+                                <td>{{ job.output_file }}</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Started</strong></td>
+                                <td>{{ job.start_time.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                            </tr>
+                            {% if job.end_time %}
+                            <tr>
+                                <td><strong>Completed</strong></td>
+                                <td>{{ job.end_time.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                            </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
                 </div>
             </div>
         </div>
@@ -91,7 +168,7 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h5 class="modal-title">
-                            <i class="fas fa-table"></i> Results Preview
+                            <i class="fas fa-table me-2"></i> Results Preview
                         </h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
@@ -113,37 +190,76 @@
 
 {% block scripts %}
 <script>
-let jobId = '{{ job.job_id }}';
-
-function updateJobStatus() {
-    fetch(`/job_status/${jobId}`)
-        .then(response => response.json())
-        .then(data => {
+// Store job data in data attributes
+document.addEventListener('DOMContentLoaded', function() {
+    // Get job data from data attributes
+    const jobId = "{{ job.job_id }}";
+    const progress = parseFloat("{{ job.progress }}");
+    const startTimeString = "{{ job.start_time.strftime('%Y-%m-%d %H:%M:%S') }}";
+    const startTime = new Date(startTimeString).getTime();
+    
+    // Initialize progress bar width
+    const progressBar = document.getElementById('progress-bar');
+    if (progressBar) {
+        progressBar.style.width = progress + '%';
+        progressBar.setAttribute('data-progress', progress);
+    }
+    
+    // Connect to SocketIO
+    const socket = io();
+    
+    // Calculate and display ETA
+    function updateETA(progress, startTime) {
+        if (progress > 0 && progress < 100) {
+            const elapsed = Date.now() - startTime;
+            const estimatedTotalTime = (elapsed / progress) * 100;
+            const remainingTime = estimatedTotalTime - elapsed;
+            
+            // Convert to minutes and seconds
+            const minutes = Math.floor(remainingTime / 60000);
+            const seconds = Math.floor((remainingTime % 60000) / 1000);
+            
+            const etaElement = document.getElementById('eta');
+            if (etaElement) {
+                etaElement.textContent = `ETA: ${minutes}m ${seconds}s`;
+            }
+        }
+    }
+    
+    // Listen for job updates
+    socket.on('job_update', function(data) {
+        if (data.job_id === jobId) {
             // Update status badge
             const statusBadge = document.getElementById('status-badge');
-            statusBadge.textContent = data.status.charAt(0).toUpperCase() + data.status.slice(1);
+            const detailsStatus = document.getElementById('details-status');
+            const statusText = data.status.charAt(0).toUpperCase() + data.status.slice(1);
+            
+            statusBadge.textContent = statusText;
+            detailsStatus.textContent = statusText;
             
             // Update badge color based on status
-            statusBadge.className = 'badge ';
+            statusBadge.className = 'badge fs-6 ';
             if (data.status === 'completed') {
                 statusBadge.className += 'bg-success';
+                showNotification('Scraping job completed successfully!', 'success');
                 // Add download button if not exists
                 if (!document.querySelector('a[href*="download_results"]')) {
                     const actionButtons = document.getElementById('action-buttons');
                     actionButtons.innerHTML = `
-                        <a href="/download/${jobId}" class="btn btn-success me-2">
-                            <i class="fas fa-download"></i> Download Results
+                        <a href="/download/${jobId}" class="btn btn-success">
+                            <i class="fas fa-download me-2"></i> Download Results
                         </a>
-                        <button type="button" class="btn btn-info me-2" onclick="previewResults()">
-                            <i class="fas fa-eye"></i> Preview Results
+                        <button type="button" class="btn btn-info" onclick="previewResults()">
+                            <i class="fas fa-eye me-2"></i> Preview Results
                         </button>
                         <a href="/" class="btn btn-secondary">
-                            <i class="fas fa-arrow-left"></i> Back to Home
+                            <i class="fas fa-arrow-left me-2"></i> Back to Home
                         </a>
                     `;
                 }
             } else if (data.status === 'failed') {
                 statusBadge.className += 'bg-danger';
+                showNotification('Scraping job failed. Please check the error message.', 'error');
                 // Show error message
                 if (data.error_message) {
                     const errorSection = document.getElementById('error-section');
@@ -152,90 +268,85 @@ function updateJobStatus() {
                     errorSection.classList.remove('d-none');
                 }
             } else {
-                statusBadge.className += 'bg-primary';
+                statusBadge.className += 'bg-info';
             }
             
             // Update progress bar
             const progressBar = document.getElementById('progress-bar');
             const progressText = document.getElementById('progress-text');
             progressBar.style.width = data.progress + '%';
+            progressBar.setAttribute('data-progress', data.progress);
             progressText.textContent = data.progress.toFixed(1) + '%';
             
             // Update result count
             document.getElementById('result-count').textContent = data.result_count;
             
-            // Update end time
+            // Update ETA
+            updateETA(data.progress, startTime);
+            
+            // Update end time if provided
             if (data.end_time) {
                 document.getElementById('end-time').textContent = data.end_time;
             }
             
-            // Stop polling if job is complete
+            // Stop progress animation if job is complete
             if (data.status === 'completed' || data.status === 'failed') {
-                clearInterval(statusInterval);
                 progressBar.classList.remove('progress-bar-animated');
             }
-        })
-        .catch(error => {
-            console.error('Error fetching job status:', error);
-        });
-}
-
-function previewResults() {
-    const modal = new bootstrap.Modal(document.getElementById('previewModal'));
-    modal.show();
+        }
+    });
     
-    fetch(`/preview/${jobId}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) {
-                document.getElementById('preview-content').innerHTML = 
-                    `<div class="alert alert-danger">${data.error}</div>`;
-                return;
-            }
-            
-            let html = `
-                <div class="mb-3">
-                    <strong>Total Rows:</strong> ${data.total_rows} | 
-                    <strong>Showing:</strong> ${Math.min(10, data.total_rows)} rows
-                </div>
-                <div class="table-responsive">
-                    <table class="table table-striped table-sm">
-                        <thead class="table-dark">
-                            <tr>
-            `;
-            
-            // Add column headers
-            data.columns.forEach(col => {
-                html += `<th>${col}</th>`;
-            });
-            html += '</tr></thead><tbody>';
-            
-            // Add data rows
-            data.data.forEach(row => {
-                html += '<tr>';
+    function previewResults() {
+        const modal = new bootstrap.Modal(document.getElementById('previewModal'));
+        modal.show();
+        
+        fetch(`/preview/${jobId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById('preview-content').innerHTML = 
+                        `<div class="alert alert-danger">${data.error}</div>`;
+                    return;
+                }
+                
+                let html = `
+                    <div class="mb-3">
+                        <strong>Total Rows:</strong> ${data.total_rows} | 
+                        <strong>Showing:</strong> ${Math.min(10, data.total_rows)} rows
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-sm">
+                            <thead class="table-dark">
+                                <tr>
+                `;
+                
+                // Add column headers
                 data.columns.forEach(col => {
-                    let value = row[col] || '';
-                    if (typeof value === 'string' && value.length > 50) {
-                        value = value.substring(0, 50) + '...';
-                    }
-                    html += `<td>${value}</td>`;
+                    html += `<th>${col}</th>`;
                 });
-                html += '</tr>';
+                html += '</tr></thead><tbody>';
+                
+                // Add data rows
+                data.data.forEach(row => {
+                    html += '<tr>';
+                    data.columns.forEach(col => {
+                        let value = row[col] || '';
+                        if (typeof value === 'string' && value.length > 50) {
+                            value = value.substring(0, 50) + '...';
+                        }
+                        html += `<td>${value}</td>`;
+                    });
+                    html += '</tr>';
+                });
+                
+                html += '</tbody></table></div>';
+                document.getElementById('preview-content').innerHTML = html;
+            })
+            .catch(error => {
+                document.getElementById('preview-content').innerHTML = 
+                    `<div class="alert alert-danger">Error loading preview: ${error.message}</div>`;
             });
-            
-            html += '</tbody></table></div>';
-            document.getElementById('preview-content').innerHTML = html;
-        })
-        .catch(error => {
-            document.getElementById('preview-content').innerHTML = 
-                `<div class="alert alert-danger">Error loading preview: ${error.message}</div>`;
-        });
-}
-
-// Poll for status updates every 2 seconds if job is running
-let statusInterval;
-if ('{{ job.status }}' === 'running') {
-    statusInterval = setInterval(updateJobStatus, 2000);
-}
+    }
+});
 </script>
 {% endblock %}
