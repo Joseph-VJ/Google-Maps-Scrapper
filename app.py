@@ -9,12 +9,14 @@ import uuid
 import hashlib
 import logging
 from main import CacheManager  # Import our cache manager
-from flask_socketio import SocketIO, emit
+from flask_socketio import SocketIO
+from job_service import JobNotFound, JobService, RateLimitExceeded
 from collections import OrderedDict
 
 app = Flask(__name__)
 app.secret_key = 'your-secret-key-here'
 socketio = SocketIO(app, cors_allowed_origins="*")
+job_service = JobService(socketio)
 
 # Store running jobs
 running_jobs = {}
@@ -545,20 +547,6 @@ def optimize_duplicate_check_caches():
     for key in expired_keys:
         del _metadata_cache[key]
 
-class ScrapingJob:
-    def __init__(self, job_id, search_query, total_results, output_file, append_mode=False, fast_append=False):
-        self.job_id = job_id
-        self.search_query = search_query
-        self.total_results = total_results
-        self.output_file = output_file
-        self.append_mode = append_mode
-        self.fast_append = fast_append
-        self.status = "running"
-        self.progress = 0
-        self.result_count = 0
-        self.error_message = None
-        self.start_time = datetime.now()
-        self.end_time = None
 
 class ChennaiScrapingJob:
     def __init__(self, job_id, business_type, areas, results_per_area, output_file, append_mode=False, fast_append=False):
@@ -582,101 +570,45 @@ class ChennaiScrapingJob:
         # Calculate total expected results
         self.total_results = len(areas) * results_per_area
 
-def run_scraper(job):
-    """Run the scraper in a separate thread"""
-    try:
-        # Build command
-        cmd = [
-            "C:/Python313/python.exe", 
-            "main.py", 
-            "-s", job.search_query, 
-            "-t", str(job.total_results),
-            "-o", job.output_file
-        ]
-        
-        if job.append_mode:
-            cmd.append("--append")
-            
-        # Add ultra-fast flag for maximum append speed
-        if hasattr(job, 'fast_append') and job.fast_append:
-            cmd.append("--ultra-fast")
-        
-        # Run the scraper
-        process = subprocess.Popen(
-            cmd, 
-            stdout=subprocess.PIPE, 
-            stderr=subprocess.PIPE,
-            text=True,
-            cwd=os.path.dirname(os.path.abspath(__file__))
-        )
-        
-        # Monitor progress
-        while True:
-            output = process.stdout.readline() if process.stdout else ''
-            if output == '' and process.poll() is not None:
-                break
-            if output:
-                # Parse progress from output
-                if "Currently Found:" in output:
-                    try:
-                        current = int(output.split("Currently Found:")[1].strip())
-                        job.progress = min((current / job.total_results) * 100, 100)
-                        # Emit progress update via SocketIO
-                        socketio.emit('job_update', {
-                            'job_id': job.job_id,
-                            'status': job.status,
-                            'progress': job.progress,
-                            'result_count': job.result_count
-                        })
-                    except:
-                        pass
-                elif "Total Found:" in output:
-                    try:
-                        job.result_count = int(output.split("Total Found:")[1].strip())
-                        # Emit progress update via SocketIO
-                        socketio.emit('job_update', {
-                            'job_id': job.job_id,
-                            'status': job.status,
-                            'progress': job.progress,
-                            'result_count': job.result_count
-                        })
-                    except:
-                        pass
-        
-        # Check if process completed successfully
-        if process.returncode == 0:
-            job.status = "completed"
-            job.progress = 100
-        else:
-            job.status = "failed"
-            stderr = process.stderr.read() if process.stderr else ""
-            job.error_message = stderr if stderr else "Unknown error occurred"
-            
-        # Emit final status update via SocketIO
-        socketio.emit('job_update', {
-            'job_id': job.job_id,
-            'status': job.status,
-            'progress': job.progress,
-            'result_count': job.result_count,
-            'error_message': job.error_message,
-            'end_time': job.end_time.strftime('%Y-%m-%d %H:%M:%S') if job.end_time else None
-        })
-            
-    except Exception as e:
-        job.status = "failed"
-        job.error_message = str(e)
-        # Emit error update via SocketIO
-        socketio.emit('job_update', {
-            'job_id': job.job_id,
-            'status': job.status,
-            'error_message': job.error_message
-        })
-    
-    job.end_time = datetime.now()
-
 def run_chennai_scraper(job):
     """Run the Chennai area scraper in a separate thread"""
     try:
+        def emit_progress(status_override=None, error_message=None):
+            status = status_override or job.status
+            payload = {
+                'job_id': job.job_id,
+                'status': status,
+                'progress': job.progress,
+                'result_count': job.result_count,
+                'timestamp': time.time(),
+                'current_area': getattr(job, 'current_area', None),
+                'completed_areas': getattr(job, 'completed_areas', None),
+                'total_areas': getattr(job, 'total_areas', None),
+                'error_message': error_message or job.error_message,
+                'end_time': job.end_time.strftime('%Y-%m-%d %H:%M:%S') if job.end_time else None,
+            }
+            socketio.emit('job_progress', payload)
+            elapsed_seconds = max((datetime.now() - job.start_time).total_seconds(), 0.0)
+            throughput_per_minute = 0.0
+            if elapsed_seconds > 0 and job.result_count > 0:
+                throughput_per_minute = (job.result_count / elapsed_seconds) * 60
+            remaining = max(job.total_results - job.result_count, 0)
+            eta_seconds = None
+            if throughput_per_minute > 0:
+                per_second = throughput_per_minute / 60
+                if per_second > 0:
+                    eta_seconds = remaining / per_second
+            metrics_payload = {
+                'job_id': job.job_id,
+                'throughput_per_minute': throughput_per_minute,
+                'eta_seconds': eta_seconds,
+                'elapsed_seconds': elapsed_seconds,
+                'result_count': job.result_count,
+                'total_results': job.total_results,
+            }
+            socketio.emit('job_metrics', metrics_payload)
+
+        emit_progress()
         # Start with append mode false for first area, then true for subsequent areas
         first_area = True
         
@@ -727,15 +659,7 @@ def run_chennai_scraper(job):
                             total_progress = (job.completed_areas * job.results_per_area + current) / job.total_results
                             job.progress = min(total_progress * 100, 100)
                             # Emit progress update via SocketIO
-                            socketio.emit('job_update', {
-                                'job_id': job.job_id,
-                                'status': job.status,
-                                'progress': job.progress,
-                                'result_count': job.result_count,
-                                'current_area': job.current_area,
-                                'completed_areas': job.completed_areas,
-                                'total_areas': job.total_areas
-                            })
+                            emit_progress()
                         except:
                             pass
                     elif "Total Found:" in output:
@@ -743,15 +667,7 @@ def run_chennai_scraper(job):
                             area_results = int(output.split("Total Found:")[1].strip())
                             job.result_count += area_results
                             # Emit progress update via SocketIO
-                            socketio.emit('job_update', {
-                                'job_id': job.job_id,
-                                'status': job.status,
-                                'progress': job.progress,
-                                'result_count': job.result_count,
-                                'current_area': job.current_area,
-                                'completed_areas': job.completed_areas,
-                                'total_areas': job.total_areas
-                            })
+                            emit_progress()
                         except:
                             pass
             
@@ -760,25 +676,14 @@ def run_chennai_scraper(job):
                 job.completed_areas += 1
                 job.progress = (job.completed_areas / job.total_areas) * 100
                 # Emit progress update via SocketIO
-                socketio.emit('job_update', {
-                    'job_id': job.job_id,
-                    'status': job.status,
-                    'progress': job.progress,
-                    'result_count': job.result_count,
-                    'current_area': job.current_area,
-                    'completed_areas': job.completed_areas,
-                    'total_areas': job.total_areas
-                })
+                emit_progress()
             else:
                 stderr = process.stderr.read() if process.stderr else ""
                 job.error_message = f"Error in area {area}: {stderr if stderr else 'Unknown error'}"
                 job.status = "failed"
+                job.end_time = datetime.now()
                 # Emit error update via SocketIO
-                socketio.emit('job_update', {
-                    'job_id': job.job_id,
-                    'status': job.status,
-                    'error_message': job.error_message
-                })
+                emit_progress(status_override="failed", error_message=job.error_message)
                 break
             
             first_area = False
@@ -787,26 +692,16 @@ def run_chennai_scraper(job):
         if job.status != "failed":
             job.status = "completed"
             job.progress = 100
+            job.end_time = datetime.now()
             # Emit final status update via SocketIO
-            socketio.emit('job_update', {
-                'job_id': job.job_id,
-                'status': job.status,
-                'progress': job.progress,
-                'result_count': job.result_count,
-                'completed_areas': job.completed_areas,
-                'total_areas': job.total_areas,
-                'end_time': job.end_time.strftime('%Y-%m-%d %H:%M:%S') if job.end_time else None
-            })
+            emit_progress(status_override="completed")
             
     except Exception as e:
         job.status = "failed"
         job.error_message = str(e)
+        job.end_time = datetime.now()
         # Emit error update via SocketIO
-        socketio.emit('job_update', {
-            'job_id': job.job_id,
-            'status': job.status,
-            'error_message': job.error_message
-        })
+        emit_progress(status_override="failed", error_message=job.error_message)
     
     job.end_time = datetime.now()
 
@@ -901,15 +796,23 @@ def start_scraping():
         
         # Generate unique job ID
         job_id = str(uuid.uuid4())
-        
-        # Create job with fast_append support
-        job = ScrapingJob(job_id, search_query, total_results, output_file, append_mode, fast_append)
-        running_jobs[job_id] = job
-        
-        # Start scraping in background thread
-        thread = threading.Thread(target=run_scraper, args=(job,))
-        thread.daemon = True
-        thread.start()
+
+        try:
+            job_service.start_job(
+                job_id=job_id,
+                search_query=search_query,
+                total_results=total_results,
+                output_file=output_file,
+                append_mode=append_mode,
+                fast_append=fast_append,
+            )
+        except RateLimitExceeded as exc:
+            flash(str(exc), 'error')
+            return redirect(url_for('index'))
+        except Exception as exc:
+            logging.exception("Error starting scraping job %s", job_id)
+            flash(f'Error starting scraping job: {exc}', 'error')
+            return redirect(url_for('index'))
         
         return redirect(url_for('monitor_job', job_id=job_id))
         
@@ -987,8 +890,9 @@ def start_chennai_scraping():
 
 @app.route('/monitor/<job_id>')
 def monitor_job(job_id):
-    job = running_jobs.get(job_id)
-    if not job:
+    try:
+        job = job_service.get_job(job_id)
+    except JobNotFound:
         flash('Job not found!', 'error')
         return redirect(url_for('index'))
     
@@ -1005,33 +909,47 @@ def monitor_chennai_job(job_id):
 
 @app.route('/job_status/<job_id>')
 def job_status(job_id):
-    job = running_jobs.get(job_id)
-    if not job:
-        return jsonify({'error': 'Job not found'}), 404
-    
-    response_data = {
-        'status': job.status,
-        'progress': job.progress,
-        'result_count': job.result_count,
-        'error_message': job.error_message,
-        'start_time': job.start_time.strftime('%Y-%m-%d %H:%M:%S'),
-        'end_time': job.end_time.strftime('%Y-%m-%d %H:%M:%S') if job.end_time else None
-    }
-    
-    # Add Chennai-specific info if it's a Chennai job
-    if isinstance(job, ChennaiScrapingJob):
-        response_data.update({
-            'current_area': job.current_area,
-            'completed_areas': job.completed_areas,
-            'total_areas': job.total_areas,
-            'business_type': job.business_type
-        })
-    
-    return jsonify(response_data)
+    try:
+        job = job_service.get_job(job_id)
+        response_data = {
+            'status': job.status,
+            'progress': job.progress,
+            'result_count': job.result_count,
+            'error_message': job.error_message,
+            'start_time': job.start_time.strftime('%Y-%m-%d %H:%M:%S'),
+            'end_time': job.end_time.strftime('%Y-%m-%d %H:%M:%S') if job.end_time else None,
+            'throughput_per_minute': job.throughput_per_minute,
+            'eta_seconds': job.eta_seconds,
+            'elapsed_seconds': job.elapsed_seconds,
+        }
+        return jsonify(response_data)
+    except JobNotFound:
+        job = running_jobs.get(job_id)
+        if not job:
+            return jsonify({'error': 'Job not found'}), 404
+        response_data = {
+            'status': job.status,
+            'progress': job.progress,
+            'result_count': job.result_count,
+            'error_message': job.error_message,
+            'start_time': job.start_time.strftime('%Y-%m-%d %H:%M:%S'),
+            'end_time': job.end_time.strftime('%Y-%m-%d %H:%M:%S') if job.end_time else None
+        }
+        if isinstance(job, ChennaiScrapingJob):
+            response_data.update({
+                'current_area': job.current_area,
+                'completed_areas': job.completed_areas,
+                'total_areas': job.total_areas,
+                'business_type': job.business_type
+            })
+        return jsonify(response_data)
 
 @app.route('/download/<job_id>')
 def download_results(job_id):
-    job = running_jobs.get(job_id)
+    try:
+        job = job_service.get_job(job_id)
+    except JobNotFound:
+        job = running_jobs.get(job_id)
     if not job or job.status != 'completed':
         flash('File not ready for download!', 'error')
         return redirect(url_for('index'))
@@ -1062,41 +980,53 @@ def get_file_preview(file_path, lines=10):
 
 @app.route('/preview/<job_id>')
 def preview_results(job_id):
-    job = running_jobs.get(job_id)
-    if not job or job.status != 'completed':
-        return jsonify({'error': 'Results not ready'}), 400
-    
-    file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), job.output_file)
-    if os.path.exists(file_path):
-        try:
-            # Use streaming preview instead of loading entire file
+    try:
+        job = job_service.get_job(job_id)
+        preview = job_service.get_preview(job_id)
+        response = {
+            'data': preview['records'],
+            'total_rows': preview['result_count'],
+            'columns': preview['columns'],
+            'status': job.status,
+        }
+        if job.status == 'completed' and not preview['records']:
+            # Fallback to file preview for completed jobs with no cached records
+            file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), job.output_file)
+            if not os.path.exists(file_path):
+                return jsonify({'error': 'File not found'}), 404
             preview_data = get_file_preview(file_path, 10)
-            
-            # Get total row count efficiently
             with open(file_path, 'r', encoding='utf-8') as f:
-                total_rows = sum(1 for _ in f) - 1  # Subtract header
-            
-            # Get columns from header
+                columns = f.readline().strip().split(',')
+                total_rows = sum(1 for _ in f)
+            response.update({'data': preview_data, 'columns': columns, 'total_rows': max(total_rows, 0)})
+        return jsonify(response)
+    except JobNotFound:
+        job = running_jobs.get(job_id)
+        if not job or job.status != 'completed':
+            return jsonify({'error': 'Results not ready'}), 400
+        file_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), job.output_file)
+        if not os.path.exists(file_path):
+            return jsonify({'error': 'File not found'}), 404
+        try:
+            preview_data = get_file_preview(file_path, 10)
             with open(file_path, 'r', encoding='utf-8') as f:
-                header = f.readline().strip()
-                columns = header.split(',')
-            
+                columns = f.readline().strip().split(',')
+                total_rows = sum(1 for _ in f)
             return jsonify({
                 'data': preview_data,
-                'total_rows': total_rows,
+                'total_rows': max(total_rows, 0),
                 'columns': columns
             })
-        except Exception as e:
-            return jsonify({'error': f'Error reading file: {str(e)}'}), 500
-    else:
-        return jsonify({'error': 'File not found'}), 404
+        except Exception as exc:
+            return jsonify({'error': f'Error reading file: {exc}'}), 500
 
 @app.route('/history')
 def history():
-    # Get all completed jobs
-    completed_jobs = [job for job in running_jobs.values() if job.status in ['completed', 'failed']]
-    completed_jobs.sort(key=lambda x: x.start_time, reverse=True)
-    return render_template('history.html', jobs=completed_jobs)
+    service_jobs = [job for job in job_service.list_jobs() if job.status in ['completed', 'failed', 'interrupted']]
+    legacy_jobs = [job for job in running_jobs.values() if job.status in ['completed', 'failed', 'interrupted']]
+    all_jobs = service_jobs + legacy_jobs
+    all_jobs.sort(key=lambda job: job.start_time, reverse=True)
+    return render_template('history.html', jobs=all_jobs)
 
 if __name__ == '__main__':
     socketio.run(app, debug=True, host='0.0.0.0', port=5000)

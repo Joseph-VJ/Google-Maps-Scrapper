@@ -1,5 +1,5 @@
 import logging
-from typing import List, Optional
+from typing import Any, Callable, Dict, List, Optional
 from playwright.sync_api import sync_playwright, Page
 from dataclasses import dataclass, asdict
 import pandas as pd
@@ -321,10 +321,28 @@ def extract_place(page: Page) -> Place:
             place.opens_at = opens_at2_raw.replace("\u202f","")
     return place
 
-def scrape_places(search_for: str, total: int, output_path: str = "result.csv", ultra_fast_append: bool = False) -> List[Place]:
+def scrape_places(
+    search_for: str,
+    total: int,
+    output_path: str = "result.csv",
+    ultra_fast_append: bool = False,
+    progress_callback: Optional[Callable[[Dict[str, Any]], None]] = None,
+    metrics_callback: Optional[Callable[[Dict[str, Any]], None]] = None,
+    record_callback: Optional[Callable[[Dict[str, Any]], None]] = None,
+) -> List[Place]:
     setup_logging()
     cache_manager = CacheManager()
     places: List[Place] = []
+    start_time = time.time()
+    last_progress_emit = 0.0
+
+    def _emit(callback: Optional[Callable[[Dict[str, Any]], None]], payload: Dict[str, Any]):
+        if not callback:
+            return
+        try:
+            callback(payload)
+        except Exception as callback_error:
+            logging.debug(f"Callback emission failed: {callback_error}")
     
     # Detect if we're in append mode by checking if file exists
     is_append_mode = os.path.exists(output_path) or ultra_fast_append
@@ -339,6 +357,31 @@ def scrape_places(search_for: str, total: int, output_path: str = "result.csv", 
     else:
         existing_count = cache_manager.get_existing_data_count(output_path)
     
+    total_scraped = existing_count
+    baseline_time = time.time()
+    initial_progress = min((total_scraped / total) * 100, 100) if total else 100
+    baseline_progress_payload = {
+        'search_query': search_for,
+        'current': total_scraped,
+        'target': total,
+        'progress': initial_progress,
+        'timestamp': baseline_time,
+        'status': 'running',
+        'output_file': output_path,
+    }
+    _emit(progress_callback, baseline_progress_payload)
+    baseline_metrics_payload = {
+        'timestamp': baseline_time,
+        'elapsed_seconds': 0.0,
+        'total_scraped': total_scraped,
+        'remaining': max(total - total_scraped, 0),
+        'target': total,
+        'delta': 0,
+        'existing_count': existing_count,
+    }
+    _emit(metrics_callback, baseline_metrics_payload)
+    last_progress_emit = baseline_time
+    
     if cache and existing_count >= cache.scraped_count:
         logging.info(f"🔄 RESUMING SCRAPING from cache...")
         logging.info(f"   Search: {search_for}")
@@ -347,9 +390,33 @@ def scrape_places(search_for: str, total: int, output_path: str = "result.csv", 
         logging.info(f"   Last index: {cache.last_scraped_index}")
         start_index = cache.last_scraped_index + 1
         is_append_mode = True  # Force append mode when resuming
+        total_scraped = max(total_scraped, cache.scraped_count)
         
         if cache.scraped_count >= total:
             logging.info("✅ Scraping already completed according to cache!")
+            completion_time = time.time()
+            completion_progress = min((total_scraped / total) * 100, 100) if total else 100
+            completion_progress_payload = {
+                'search_query': search_for,
+                'current': total_scraped,
+                'target': total,
+                'progress': completion_progress,
+                'timestamp': completion_time,
+                'status': 'completed',
+                'output_file': output_path,
+            }
+            _emit(progress_callback, completion_progress_payload)
+            completion_metrics_payload = {
+                'timestamp': completion_time,
+                'elapsed_seconds': 0.0,
+                'total_scraped': total_scraped,
+                'remaining': 0,
+                'target': total,
+                'delta': 0,
+                'existing_count': existing_count,
+            }
+            _emit(metrics_callback, completion_metrics_payload)
+            last_progress_emit = completion_time
             return []
     else:
         logging.info(f"🆕 STARTING NEW SCRAPING...")
@@ -512,7 +579,6 @@ def scrape_places(search_for: str, total: int, output_path: str = "result.csv", 
                     listings = listings[start_index:]
                 
                 scraped_in_session = 0
-                total_scraped = existing_count
                 
                 for idx, listing in enumerate(listings):
                     actual_idx = start_index + idx
@@ -535,10 +601,51 @@ def scrape_places(search_for: str, total: int, output_path: str = "result.csv", 
                             scraped_in_session += 1
                             total_scraped += 1
                             
-                            # Optimized batch saving with streaming approach
+                            now = time.time()
+                            progress_fraction = (total_scraped / total) if total else 1
+                            progress_value = min(progress_fraction * 100, 100)
+                            should_emit_progress = (
+                                now - last_progress_emit >= 0.2
+                                or progress_value >= 100
+                                or total_scraped == existing_count + 1
+                            )
+                            
+                            if should_emit_progress:
+                                progress_payload = {
+                                    'search_query': search_for,
+                                    'current': total_scraped,
+                                    'target': total,
+                                    'progress': progress_value,
+                                    'timestamp': now,
+                                    'status': 'running',
+                                    'output_file': output_path,
+                                }
+                                _emit(progress_callback, progress_payload)
+                                
+                                metrics_payload = {
+                                    'timestamp': now,
+                                    'elapsed_seconds': max(now - start_time, 0.0),
+                                    'total_scraped': total_scraped,
+                                    'remaining': max(total - total_scraped, 0),
+                                    'target': total,
+                                    'delta': 1,
+                                    'existing_count': existing_count,
+                                }
+                                _emit(metrics_callback, metrics_payload)
+                                last_progress_emit = now
+                            
                             if scraped_in_session % 20 == 0 or actual_idx == len(listings) - 1:
-                                # Use streaming CSV writing for maximum performance
+                                batch_places = list(places) if record_callback else None
                                 save_places_to_csv_streaming(places, output_path, append=is_append_mode)
+                                if record_callback and batch_places:
+                                    batch_payload = {
+                                        'records': [asdict(p) for p in batch_places],
+                                        'output_file': output_path,
+                                        'timestamp': time.time(),
+                                        'total_scraped': total_scraped,
+                                        'target': total,
+                                    }
+                                    _emit(record_callback, batch_payload)
                                 places = []  # Clear list to save memory
                                 
                                 # Update cache
@@ -553,9 +660,42 @@ def scrape_places(search_for: str, total: int, output_path: str = "result.csv", 
                     
                     except KeyboardInterrupt:
                         logging.info("🛑 SCRAPING INTERRUPTED BY USER")
+                        interrupt_time = time.time()
+                        batch_places = list(places) if places and record_callback else None
                         # Ultra-fast save current progress before exiting
                         if places:
                             save_places_to_csv_streaming(places, output_path, append=is_append_mode)
+                            if record_callback and batch_places:
+                                interrupt_batch_payload = {
+                                    'records': [asdict(p) for p in batch_places],
+                                    'output_file': output_path,
+                                    'timestamp': interrupt_time,
+                                    'total_scraped': total_scraped,
+                                    'target': total,
+                                }
+                                _emit(record_callback, interrupt_batch_payload)
+                        interrupt_progress = min((total_scraped / total) * 100, 100) if total else 100
+                        interrupt_progress_payload = {
+                            'search_query': search_for,
+                            'current': total_scraped,
+                            'target': total,
+                            'progress': interrupt_progress,
+                            'timestamp': interrupt_time,
+                            'status': 'interrupted',
+                            'output_file': output_path,
+                        }
+                        _emit(progress_callback, interrupt_progress_payload)
+                        interrupt_metrics_payload = {
+                            'timestamp': interrupt_time,
+                            'elapsed_seconds': max(interrupt_time - start_time, 0.0),
+                            'total_scraped': total_scraped,
+                            'remaining': max(total - total_scraped, 0),
+                            'target': total,
+                            'delta': 0,
+                            'existing_count': existing_count,
+                        }
+                        _emit(metrics_callback, interrupt_metrics_payload)
+                        last_progress_emit = interrupt_time
                         cache_manager.save_cache(
                             search_for, output_path, total, 
                             total_scraped, actual_idx
@@ -570,6 +710,29 @@ def scrape_places(search_for: str, total: int, output_path: str = "result.csv", 
                 
                 # Clear cache when completed successfully
                 if total_scraped >= total:
+                    completion_time = time.time()
+                    completion_progress = min((total_scraped / total) * 100, 100) if total else 100
+                    completion_progress_payload = {
+                        'search_query': search_for,
+                        'current': total_scraped,
+                        'target': total,
+                        'progress': completion_progress,
+                        'timestamp': completion_time,
+                        'status': 'running',
+                        'output_file': output_path,
+                    }
+                    _emit(progress_callback, completion_progress_payload)
+                    completion_metrics_payload = {
+                        'timestamp': completion_time,
+                        'elapsed_seconds': max(completion_time - start_time, 0.0),
+                        'total_scraped': total_scraped,
+                        'remaining': 0,
+                        'target': total,
+                        'delta': 0,
+                        'existing_count': existing_count,
+                    }
+                    _emit(metrics_callback, completion_metrics_payload)
+                    last_progress_emit = completion_time
                     cache_manager.clear_cache(search_for, output_path)
                     logging.info("✅ Scraping completed successfully! Cache cleared.")
                         

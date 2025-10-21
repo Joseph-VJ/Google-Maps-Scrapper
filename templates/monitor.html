@@ -190,163 +190,206 @@
 
 {% block scripts %}
 <script>
-// Store job data in data attributes
 document.addEventListener('DOMContentLoaded', function() {
-    // Get job data from data attributes
     const jobId = "{{ job.job_id }}";
-    const progress = parseFloat("{{ job.progress }}");
-    const startTimeString = "{{ job.start_time.strftime('%Y-%m-%d %H:%M:%S') }}";
-    const startTime = new Date(startTimeString).getTime();
-    
-    // Initialize progress bar width
+    const initialProgress = parseFloat("{{ job.progress }}");
     const progressBar = document.getElementById('progress-bar');
+    const progressText = document.getElementById('progress-text');
+    const statusBadge = document.getElementById('status-badge');
+    const detailsStatus = document.getElementById('details-status');
+    const resultCountEl = document.getElementById('result-count');
+    const etaElement = document.getElementById('eta');
+    const endTimeElement = document.getElementById('end-time');
+    const errorSection = document.getElementById('error-section');
+    const errorMessageEl = document.getElementById('error-message');
+    const actionButtons = document.getElementById('action-buttons');
+    let latestMetrics = null;
+    let latestPreviewRecords = [];
+
     if (progressBar) {
-        progressBar.style.width = progress + '%';
-        progressBar.setAttribute('data-progress', progress);
+        progressBar.style.width = initialProgress + '%';
+        progressBar.setAttribute('data-progress', initialProgress);
     }
-    
-    // Connect to SocketIO
+    if (progressText && !Number.isNaN(initialProgress)) {
+        progressText.textContent = initialProgress.toFixed(1) + '%';
+    }
+
     const socket = io();
-    
-    // Calculate and display ETA
-    function updateETA(progress, startTime) {
-        if (progress > 0 && progress < 100) {
-            const elapsed = Date.now() - startTime;
-            const estimatedTotalTime = (elapsed / progress) * 100;
-            const remainingTime = estimatedTotalTime - elapsed;
-            
-            // Convert to minutes and seconds
-            const minutes = Math.floor(remainingTime / 60000);
-            const seconds = Math.floor((remainingTime % 60000) / 1000);
-            
-            const etaElement = document.getElementById('eta');
-            if (etaElement) {
-                etaElement.textContent = `ETA: ${minutes}m ${seconds}s`;
-            }
+
+    function ensureActionsForCompletion() {
+        if (!actionButtons) {
+            return;
+        }
+        if (!document.querySelector(`a[href="/download/${jobId}"]`)) {
+            actionButtons.innerHTML = `
+                <a href="/download/${jobId}" class="btn btn-success">
+                    <i class="fas fa-download me-2"></i> Download Results
+                </a>
+                <button type="button" class="btn btn-info" onclick="previewResults()">
+                    <i class="fas fa-eye me-2"></i> Preview Results
+                </button>
+                <a href="/" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left me-2"></i> Back to Home
+                </a>
+            `;
         }
     }
-    
-    // Listen for job updates
-    socket.on('job_update', function(data) {
-        if (data.job_id === jobId) {
-            // Update status badge
-            const statusBadge = document.getElementById('status-badge');
-            const detailsStatus = document.getElementById('details-status');
-            const statusText = data.status.charAt(0).toUpperCase() + data.status.slice(1);
-            
-            statusBadge.textContent = statusText;
-            detailsStatus.textContent = statusText;
-            
-            // Update badge color based on status
-            statusBadge.className = 'badge fs-6 ';
-            if (data.status === 'completed') {
-                statusBadge.className += 'bg-success';
-                showNotification('Scraping job completed successfully!', 'success');
-                // Add download button if not exists
-                if (!document.querySelector('a[href*="download_results"]')) {
-                    const actionButtons = document.getElementById('action-buttons');
-                    actionButtons.innerHTML = `
-                        <a href="/download/${jobId}" class="btn btn-success">
-                            <i class="fas fa-download me-2"></i> Download Results
-                        </a>
-                        <button type="button" class="btn btn-info" onclick="previewResults()">
-                            <i class="fas fa-eye me-2"></i> Preview Results
-                        </button>
-                        <a href="/" class="btn btn-secondary">
-                            <i class="fas fa-arrow-left me-2"></i> Back to Home
-                        </a>
-                    `;
-                }
-            } else if (data.status === 'failed') {
-                statusBadge.className += 'bg-danger';
-                showNotification('Scraping job failed. Please check the error message.', 'error');
-                // Show error message
-                if (data.error_message) {
-                    const errorSection = document.getElementById('error-section');
-                    const errorMessage = document.getElementById('error-message');
-                    errorMessage.textContent = data.error_message;
-                    errorSection.classList.remove('d-none');
-                }
+
+    function updateStatus(status, errorMessage) {
+        if (!statusBadge || !detailsStatus) {
+            return;
+        }
+        const safeStatus = status || 'running';
+        const statusText = safeStatus.charAt(0).toUpperCase() + safeStatus.slice(1);
+        statusBadge.textContent = statusText;
+        detailsStatus.textContent = statusText;
+        statusBadge.className = 'badge fs-6 ';
+
+        if (safeStatus === 'completed') {
+            statusBadge.classList.add('bg-success');
+            showNotification('Scraping job completed successfully!', 'success');
+            ensureActionsForCompletion();
+        } else if (safeStatus === 'failed') {
+            statusBadge.classList.add('bg-danger');
+            showNotification('Scraping job failed. Please check the error message.', 'error');
+        } else if (safeStatus === 'interrupted') {
+            statusBadge.classList.add('bg-warning', 'text-dark');
+            showNotification('Scraping job was interrupted.', 'warning');
+        } else {
+            statusBadge.classList.add('bg-info');
+        }
+
+        if ((safeStatus === 'failed' || safeStatus === 'interrupted') && errorSection && errorMessageEl) {
+            if (errorMessage) {
+                errorMessageEl.textContent = errorMessage;
+                errorSection.classList.remove('d-none');
             } else {
-                statusBadge.className += 'bg-info';
+                errorSection.classList.add('d-none');
             }
-            
-            // Update progress bar
-            const progressBar = document.getElementById('progress-bar');
-            const progressText = document.getElementById('progress-text');
-            progressBar.style.width = data.progress + '%';
-            progressBar.setAttribute('data-progress', data.progress);
-            progressText.textContent = data.progress.toFixed(1) + '%';
-            
-            // Update result count
-            document.getElementById('result-count').textContent = data.result_count;
-            
-            // Update ETA
-            updateETA(data.progress, startTime);
-            
-            // Update end time if provided
-            if (data.end_time) {
-                document.getElementById('end-time').textContent = data.end_time;
-            }
-            
-            // Stop progress animation if job is complete
-            if (data.status === 'completed' || data.status === 'failed') {
-                progressBar.classList.remove('progress-bar-animated');
-            }
+        } else if (errorSection) {
+            errorSection.classList.add('d-none');
+        }
+
+        if (progressBar && (safeStatus === 'completed' || safeStatus === 'failed' || safeStatus === 'interrupted')) {
+            progressBar.classList.remove('progress-bar-animated');
+        }
+    }
+
+    function updateProgress(progressValue, resultCount) {
+        const numericProgress = typeof progressValue === 'number' ? progressValue : 0;
+        const boundedProgress = Math.min(Math.max(numericProgress, 0), 100);
+        if (progressBar) {
+            progressBar.style.width = boundedProgress + '%';
+            progressBar.setAttribute('data-progress', boundedProgress);
+        }
+        if (progressText && typeof numericProgress === 'number') {
+            progressText.textContent = numericProgress.toFixed(1) + '%';
+        }
+        if (resultCountEl && typeof resultCount === 'number') {
+            resultCountEl.textContent = resultCount;
+        }
+    }
+
+    function renderMetrics(data) {
+        if (!etaElement || !data) {
+            return;
+        }
+        let etaText = 'ETA: calculating...';
+        if (typeof data.eta_seconds === 'number' && data.eta_seconds >= 0) {
+            const minutes = Math.floor(data.eta_seconds / 60);
+            const seconds = Math.floor(data.eta_seconds % 60);
+            etaText = `ETA: ${minutes}m ${seconds}s`;
+        }
+        let throughputText = '';
+        if (typeof data.throughput_per_minute === 'number' && data.throughput_per_minute > 0) {
+            throughputText = `${data.throughput_per_minute.toFixed(1)} rows/min`;
+        }
+        etaElement.textContent = throughputText ? `${etaText} · ${throughputText}` : etaText;
+    }
+
+    socket.on('job_progress', function(data) {
+        if (data.job_id !== jobId) {
+            return;
+        }
+        updateStatus(data.status, data.error_message);
+        updateProgress(data.progress || 0, data.result_count);
+        if (data.end_time && endTimeElement) {
+            endTimeElement.textContent = data.end_time;
+        }
+        if (latestMetrics) {
+            renderMetrics(latestMetrics);
         }
     });
-    
-    function previewResults() {
+
+    socket.on('job_metrics', function(data) {
+        if (data.job_id !== jobId) {
+            return;
+        }
+        latestMetrics = data;
+        renderMetrics(data);
+    });
+
+    socket.on('job_record_batch', function(data) {
+        if (data.job_id !== jobId) {
+            return;
+        }
+        latestPreviewRecords = data.preview || data.records || [];
+    });
+
+    window.previewResults = function previewResults() {
         const modal = new bootstrap.Modal(document.getElementById('previewModal'));
         modal.show();
-        
+
         fetch(`/preview/${jobId}`)
             .then(response => response.json())
             .then(data => {
                 if (data.error) {
-                    document.getElementById('preview-content').innerHTML = 
+                    document.getElementById('preview-content').innerHTML =
                         `<div class="alert alert-danger">${data.error}</div>`;
                     return;
                 }
-                
+
+                const rowsToRender = data.data && data.data.length ? data.data : latestPreviewRecords;
+                const columns = data.columns && data.columns.length
+                    ? data.columns
+                    : (rowsToRender[0] ? Object.keys(rowsToRender[0]) : []);
+                const totalRows = typeof data.total_rows === 'number' ? data.total_rows : rowsToRender.length;
+
                 let html = `
                     <div class="mb-3">
-                        <strong>Total Rows:</strong> ${data.total_rows} | 
-                        <strong>Showing:</strong> ${Math.min(10, data.total_rows)} rows
+                        <strong>Total Rows:</strong> ${totalRows} |
+                        <strong>Showing:</strong> ${Math.min(rowsToRender.length, 10)} rows
                     </div>
                     <div class="table-responsive">
                         <table class="table table-striped table-sm">
                             <thead class="table-dark">
                                 <tr>
                 `;
-                
-                // Add column headers
-                data.columns.forEach(col => {
+                columns.forEach(col => {
                     html += `<th>${col}</th>`;
                 });
                 html += '</tr></thead><tbody>';
-                
-                // Add data rows
-                data.data.forEach(row => {
+
+                rowsToRender.slice(0, 10).forEach(row => {
                     html += '<tr>';
-                    data.columns.forEach(col => {
-                        let value = row[col] || '';
+                    columns.forEach(col => {
+                        let value = row[col] ?? '';
                         if (typeof value === 'string' && value.length > 50) {
-                            value = value.substring(0, 50) + '...';
+                            value = `${value.substring(0, 50)}...`;
                         }
                         html += `<td>${value}</td>`;
                     });
                     html += '</tr>';
                 });
-                
+
                 html += '</tbody></table></div>';
                 document.getElementById('preview-content').innerHTML = html;
             })
             .catch(error => {
-                document.getElementById('preview-content').innerHTML = 
+                document.getElementById('preview-content').innerHTML =
                     `<div class="alert alert-danger">Error loading preview: ${error.message}</div>`;
             });
-    }
+    };
 });
 </script>
 {% endblock %}
