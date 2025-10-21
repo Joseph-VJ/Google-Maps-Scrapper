@@ -1,233 +1,262 @@
 {% extends "base.html" %}
 
+{% block title %}Start Scraping · Google Maps Scraper{% endblock %}
+
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-8">
-        <!-- Page header with title and description -->
-        <div class="text-center mb-4">
-            <h1 class="text-white fw-bold">Google Maps Scraper</h1>
-            <p class="text-white-50 mb-0">Extract business information from Google Maps with ease</p>
+<section class="page-hero" aria-labelledby="page-title">
+    <div class="page-hero__content">
+        <span class="hero-eyebrow">Standard scraping</span>
+        <h1 id="page-title">Gather Google Maps business intelligence</h1>
+        <p class="mb-0">Launch a guided scrape with clear milestones, cache awareness, and CSV export controls. Everything is keyboard ready and responsive across devices.</p>
+        <div class="hero-actions">
+            <a class="btn btn-primary" href="#scrapingForm" data-scroll-target="#scrapingForm">
+                <i class="fa-solid fa-sliders"></i>
+                <span class="ms-2">Configure run</span>
+            </a>
+            <a class="btn btn-soft" href="{{ url_for('chennai') }}">
+                <i class="fa-solid fa-route"></i>
+                <span class="ms-2">Launch Chennai workflow</span>
+            </a>
+            <a class="btn btn-soft" href="{{ url_for('history') }}">
+                <i class="fa-solid fa-chart-line"></i>
+                <span class="ms-2">Review history</span>
+            </a>
         </div>
-        
-        <!-- Quick action cards -->
-        <div class="row mb-4">
-            <div class="col-md-6 mb-3">
-                <div class="card h-100">
-                    <div class="card-body text-center">
-                        <i class="fas fa-search fa-2x text-primary mb-3"></i>
-                        <h5 class="card-title">Standard Scraping</h5>
-                        <p class="card-text text-muted">Scrape businesses anywhere in the world</p>
-                        <button class="btn btn-primary" onclick="showStandardForm()">Start Scraping</button>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-6 mb-3">
-                <div class="card h-100">
-                    <div class="card-body text-center">
-                        <i class="fas fa-map-marked-alt fa-2x text-success mb-3"></i>
-                        <h5 class="card-title">Chennai Areas</h5>
-                        <p class="card-text text-muted">Scrape specific areas in Chennai</p>
-                        <a href="{{ url_for('chennai') }}" class="btn btn-success">Go to Chennai</a>
-                    </div>
-                </div>
-            </div>
+    </div>
+    <div class="hero-aside" aria-label="Scraping highlights">
+        <div class="hero-aside__card">
+            <strong class="d-block mb-2">What’s new?</strong>
+            <ul class="mb-0 ps-3">
+                <li>Light &amp; dark modes with accessible contrast.</li>
+                <li>Guided sections with inline hints and tooltips.</li>
+                <li>Cache resume helpers and future performance slots.</li>
+            </ul>
         </div>
-        
-        <!-- Main scraping form -->
-        <div class="card" id="standardForm">
-            <div class="card-header bg-primary text-white">
-                <div class="d-flex justify-content-between align-items-center">
-                    <h4 class="mb-0"><i class="fas fa-search"></i> Standard Scraping</h4>
-                    <button class="btn btn-sm btn-light" onclick="toggleForm()">
-                        <i class="fas fa-times"></i>
-                    </button>
-                </div>
-            </div>
-            <div class="card-body">
-                <form method="POST" action="{{ url_for('start_scraping') }}" id="scrapingForm">
-                    <div class="mb-3">
-                        <label for="search_query" class="form-label">
-                            <i class="fas fa-search"></i> Search Query
-                        </label>
-                        <input type="text" 
-                               class="form-control form-control-lg" 
-                               id="search_query" 
-                               name="search_query" 
-                               placeholder="e.g., Turkish restaurants in Toronto Canada"
-                               required>
-                        <div class="form-text">Enter your search query for Google Maps</div>
+        <div class="grounded-card">
+            <div class="grounded-card__body">
+                <h3 class="h6 text-uppercase text-muted mb-2">Quick metrics</h3>
+                <div class="d-flex flex-column gap-2">
+                    <div>
+                        <span class="metrics-card__label">Cache aware</span>
+                        <div class="metrics-card__value">Auto-resume friendly</div>
                     </div>
-
-                    <div class="row">
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="total_results" class="form-label">
-                                    <i class="fas fa-list-ol"></i> Number of Results
-                                </label>
-                                <input type="number" 
-                                       class="form-control form-control-lg" 
-                                       id="total_results" 
-                                       name="total_results" 
-                                       value="100" 
-                                       min="1"
-                                       required>
-                                <div class="form-text">Number of results to scrape (set high value like 9999 for all available)</div>
-                            </div>
-                        </div>
-                        
-                        <div class="col-md-6">
-                            <div class="mb-3">
-                                <label for="output_file" class="form-label">
-                                    <i class="fas fa-file-csv"></i> Output File Name
-                                </label>
-                                <input type="text" 
-                                       class="form-control form-control-lg" 
-                                       id="output_file" 
-                                       name="output_file" 
-                                       value="result.csv" 
-                                       placeholder="result.csv">
-                                <div class="form-text">Name of the output CSV file</div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Advanced options accordion -->
-                    <div class="accordion mb-3" id="advancedOptions">
-                        <div class="accordion-item">
-                            <h2 class="accordion-header" id="advancedOptionsHeading">
-                                <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#advancedOptionsCollapse">
-                                    <i class="fas fa-cog me-2"></i> Advanced Options
-                                </button>
-                            </h2>
-                            <div id="advancedOptionsCollapse" class="accordion-collapse collapse" data-bs-parent="#advancedOptions">
-                                <div class="accordion-body">
-                                    <div class="mb-3">
-                                        <div class="form-check">
-                                            <input class="form-check-input" 
-                                                   type="checkbox" 
-                                                   id="append_mode" 
-                                                   name="append_mode">
-                                            <label class="form-check-label" for="append_mode">
-                                                <i class="fas fa-plus"></i> Append to existing file
-                                            </label>
-                                            <div class="form-text">If checked, results will be added to the existing file instead of overwriting it</div>
-                                        </div>
-                                        
-                                        <div class="form-check mt-2">
-                                            <input class="form-check-input" 
-                                                   type="checkbox" 
-                                                   id="fast_append" 
-                                                   name="fast_append">
-                                            <label class="form-check-label" for="fast_append">
-                                                <i class="fas fa-bolt"></i> ⚡ Ultra-Fast Append Mode (Skip all checks)
-                                            </label>
-                                            <div class="form-text text-warning">
-                                                <strong>Maximum Speed:</strong> Bypasses duplicate checks. Use when you're 100% sure there won't be duplicates.
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Cache Status Section -->
-                    <div id="cache_status" class="mb-3" style="display: none;">
-                        <div class="alert alert-info">
-                            <h6><i class="fas fa-database"></i> Cache Found - Can Resume Previous Session!</h6>
-                            <div id="cache_details"></div>
-                            <small class="text-muted">The scraper will automatically resume from where it was interrupted.</small>
-                        </div>
-                    </div>
-
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-primary btn-lg" id="submitBtn">
-                            <i class="fas fa-play"></i> Start Scraping
-                        </button>
-                    </div>
-                </form>
-            </div>
-        </div>
-
-        <!-- Features section -->
-        <div class="card mt-4">
-            <div class="card-header">
-                <h5><i class="fas fa-star"></i> Key Features</h5>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="text-center mb-3">
-                            <i class="fas fa-building fa-2x text-primary mb-2"></i>
-                            <h6>Business Information</h6>
-                            <small class="text-muted">Name, address, website, phone number</small>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="text-center mb-3">
-                            <i class="fas fa-star fa-2x text-warning mb-2"></i>
-                            <h6>Reviews & Ratings</h6>
-                            <small class="text-muted">Review counts and average ratings</small>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="text-center mb-3">
-                            <i class="fas fa-clock fa-2x text-success mb-2"></i>
-                            <h6>Operating Hours</h6>
-                            <small class="text-muted">Business opening times and schedules</small>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="text-center mb-3">
-                            <i class="fas fa-shopping-cart fa-2x text-info mb-2"></i>
-                            <h6>Service Options</h6>
-                            <small class="text-muted">In-store shopping, pickup, delivery</small>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="text-center mb-3">
-                            <i class="fas fa-tag fa-2x text-secondary mb-2"></i>
-                            <h6>Business Type</h6>
-                            <small class="text-muted">Category and type classification</small>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="text-center mb-3">
-                            <i class="fas fa-file-csv fa-2x text-danger mb-2"></i>
-                            <h6>CSV Export</h6>
-                            <small class="text-muted">Clean, organized data export</small>
-                        </div>
+                    <div>
+                        <span class="metrics-card__label">CSV output</span>
+                        <div class="metrics-card__value">Append or overwrite</div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+</section>
+
+<div class="guided-layout">
+    <div class="guided-layout__primary">
+        <form method="POST" action="{{ url_for('start_scraping') }}" id="scrapingForm" class="guided-form" novalidate tabindex="-1">
+            <section class="form-section" aria-labelledby="search-focus-heading">
+                <header class="section-header">
+                    <div>
+                        <p class="section-kicker">Step 1</p>
+                        <h2 id="search-focus-heading" class="section-title">Define your search focus</h2>
+                        <p class="section-meta mb-0">Set the core query that Google Maps will run.</p>
+                    </div>
+                </header>
+                <div class="field-grid">
+                    <div class="field-group">
+                        <label for="search_query" class="field-label">
+                            <span><i class="fa-solid fa-magnifying-glass me-1"></i> Search query</span>
+                            <span class="tooltip-icon" role="img" data-bs-toggle="tooltip" title="Use descriptive keywords such as ‘Turkish restaurants in Toronto, Canada’." aria-hidden="true">?</span>
+                        </label>
+                        <input type="text" id="search_query" name="search_query" placeholder="e.g. Turkish restaurants in Toronto, Canada" required aria-describedby="search-query-hint">
+                        <p id="search-query-hint" class="input-hint">The scraper navigates Google Maps directly using this phrase.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-section" aria-labelledby="result-controls-heading">
+                <header class="section-header">
+                    <div>
+                        <p class="section-kicker">Step 2</p>
+                        <h2 id="result-controls-heading" class="section-title">Results &amp; file controls</h2>
+                        <p class="section-meta mb-0">Adjust how many listings to capture and where to save them.</p>
+                    </div>
+                </header>
+                <div class="field-grid field-grid--two">
+                    <div class="field-group">
+                        <label for="total_results" class="field-label">
+                            <span><i class="fa-solid fa-list-ol me-1"></i> Number of results</span>
+                            <span class="tooltip-icon" role="img" data-bs-toggle="tooltip" title="Set a high number like 9999 to continue until Google Maps stops returning places." aria-hidden="true">?</span>
+                        </label>
+                        <input type="number" id="total_results" name="total_results" value="100" min="1" required aria-describedby="results-count-hint">
+                        <p id="results-count-hint" class="input-hint">Must be at least 1. Aim high if you want complete coverage.</p>
+                    </div>
+                    <div class="field-group">
+                        <label for="output_file" class="field-label">
+                            <span><i class="fa-solid fa-file-csv me-1"></i> Output file name</span>
+                            <span class="tooltip-icon" role="img" data-bs-toggle="tooltip" title="Results are appended or overwritten based on the options below." aria-hidden="true">?</span>
+                        </label>
+                        <input type="text" id="output_file" name="output_file" value="result.csv" placeholder="result.csv" aria-describedby="output-file-hint">
+                        <p id="output-file-hint" class="input-hint">The CSV will be available for download once the scrape finishes.</p>
+                    </div>
+                </div>
+            </section>
+
+            <section class="form-section" aria-labelledby="advanced-options-heading">
+                <header class="section-header">
+                    <div>
+                        <p class="section-kicker">Step 3</p>
+                        <h2 id="advanced-options-heading" class="section-title">Advanced controls</h2>
+                        <p class="section-meta mb-0">Fine-tune resume behaviour and explore upcoming performance options.</p>
+                    </div>
+                    <span class="section-optional">Optional</span>
+                </header>
+
+                <div id="cache_status" class="cache-card" style="display: none;" aria-live="polite">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="fa-solid fa-database"></i>
+                        <strong>Cache detected – resume ready</strong>
+                    </div>
+                    <div id="cache_details" class="cache-card__meta"></div>
+                    <button type="button" class="btn btn-outline-primary btn-sm" onclick="document.getElementById('append_mode').checked = true;">
+                        <i class="fa-solid fa-rotate"></i>
+                        <span class="ms-1">Keep appending to resume progress</span>
+                    </button>
+                </div>
+
+                <div class="field-grid">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="append_mode" name="append_mode">
+                        <label class="form-check-label" for="append_mode">
+                            <i class="fa-solid fa-plus me-1"></i> Append to the existing file
+                        </label>
+                        <p class="input-hint">When enabled, new listings stack onto your previous CSV instead of overwriting it.</p>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="fast_append" name="fast_append">
+                        <label class="form-check-label" for="fast_append">
+                            <i class="fa-solid fa-bolt me-1"></i> Ultra-fast append (skip duplicate checks)
+                        </label>
+                        <p class="input-hint text-warning mb-0"><strong>Maximum speed:</strong> Bypasses duplicate detection. Only use when you are sure the list is clean.</p>
+                    </div>
+                </div>
+
+                <div class="field-group">
+                    <label class="field-label" for="concurrency-preview">
+                        <span><i class="fa-solid fa-users-gear me-1"></i> Concurrent workers</span>
+                        <span class="tooltip-icon" role="img" data-bs-toggle="tooltip" title="Soon you’ll be able to run parallel browser workers for faster collection." aria-hidden="true">?</span>
+                    </label>
+                    <input type="text" id="concurrency-preview" value="Coming soon" disabled aria-disabled="true">
+                    <p class="input-hint">Performance tuning controls land shortly. Stay tuned.</p>
+                </div>
+
+                <div class="form-section__footer">
+                    <div class="text-muted">Need a break? Safe to close the browser – cache resume keeps progress intact.</div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary" id="submitBtn">
+                            <span class="me-2"><i class="fa-solid fa-play"></i></span> Start scraping
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </form>
+    </div>
+
+    <aside class="guided-layout__secondary">
+        <div class="support-panel">
+            <div class="support-panel__card">
+                <h3><i class="fa-solid fa-compass me-2"></i>Helpful hints</h3>
+                <p class="mb-2">Refine search queries using neighbourhoods, business types, or postal codes for precise results.</p>
+                <p class="mb-0">Keyboard users can tab through every control. Tooltips appear on focus for additional context.</p>
+            </div>
+            <div class="support-panel__card">
+                <h3><i class="fa-solid fa-shield-check me-2"></i>Data confidence</h3>
+                <ul class="mb-0 ps-3">
+                    <li>Duplicate protection keeps CSVs clean unless ultra-fast mode is enabled.</li>
+                    <li>Cache resumes mid-run without manual intervention.</li>
+                    <li>Live notifications surface validation errors instantly.</li>
+                </ul>
+            </div>
+        </div>
+    </aside>
 </div>
 
+<section class="grounded-card mt-5" aria-labelledby="feature-highlights">
+    <div class="grounded-card__body">
+        <div class="d-flex flex-column flex-lg-row gap-4 align-items-lg-start">
+            <div class="flex-grow-1">
+                <h2 id="feature-highlights">Feature highlights</h2>
+                <p>Export rich business metadata with up-to-date hours, reviews, and service offerings. Everything is ready for spreadsheet analysis.</p>
+            </div>
+            <div class="feature-list">
+                <div class="feature-item">
+                    <span class="icon-stack"><i class="fa-solid fa-building"></i></span>
+                    <div>
+                        <h3 class="h6">Business profiles</h3>
+                        <p>Capture names, addresses, websites, phone numbers, and categories in one pass.</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <span class="icon-stack"><i class="fa-solid fa-star"></i></span>
+                    <div>
+                        <h3 class="h6">Reputation insights</h3>
+                        <p>Download review counts, average ratings, and Google highlights to vet prospects.</p>
+                    </div>
+                </div>
+                <div class="feature-item">
+                    <span class="icon-stack"><i class="fa-solid fa-clock"></i></span>
+                    <div>
+                        <h3 class="h6">Operating hours</h3>
+                        <p>Ensure leads are open for business with structured weekly schedules.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block scripts %}
 <script>
-// Show standard form
-function showStandardForm() {
-    document.getElementById('standardForm').style.display = 'block';
-    // Scroll to form
-    document.getElementById('standardForm').scrollIntoView({ behavior: 'smooth' });
-}
-
-// Toggle form visibility
-function toggleForm() {
-    const form = document.getElementById('standardForm');
-    form.style.display = form.style.display === 'none' ? 'block' : 'none';
-}
-
-// Cache checking functionality
-function checkCache() {
-    const searchQuery = document.getElementById('search_query').value.trim();
-    const outputFile = document.getElementById('output_file').value.trim();
+(function() {
     const cacheStatus = document.getElementById('cache_status');
     const cacheDetails = document.getElementById('cache_details');
-    
-    if (searchQuery && outputFile) {
+    const appendMode = document.getElementById('append_mode');
+    const fastAppend = document.getElementById('fast_append');
+    const searchQueryInput = document.getElementById('search_query');
+    const outputFileInput = document.getElementById('output_file');
+    const totalResultsInput = document.getElementById('total_results');
+    const submitBtn = document.getElementById('submitBtn');
+
+    function renderCacheDetails(cache) {
+        const percentage = cache.total_target ? Math.round((cache.scraped_count / cache.total_target) * 100) : 0;
+        const timestamp = cache.timestamp ? new Date(cache.timestamp).toLocaleString() : 'Recently';
+        cacheDetails.innerHTML = `
+            <div><strong>Progress:</strong> ${cache.scraped_count}/${cache.total_target} records (${percentage}%)</div>
+            <div><strong>Last updated:</strong> ${timestamp}</div>
+            <div><strong>File status:</strong> ${cache.existing_file_count} records currently saved</div>
+        `;
+    }
+
+    function toggleCacheStatus(visible) {
+        if (!cacheStatus) return;
+        if (visible) {
+            cacheStatus.style.display = 'grid';
+            cacheStatus.setAttribute('aria-hidden', 'false');
+        } else {
+            cacheStatus.style.display = 'none';
+            cacheStatus.setAttribute('aria-hidden', 'true');
+        }
+    }
+
+    function checkCache() {
+        const searchQuery = searchQueryInput.value.trim();
+        const outputFile = outputFileInput.value.trim();
+
+        if (!searchQuery || !outputFile) {
+            toggleCacheStatus(false);
+            return;
+        }
+
         fetch('/check_cache', {
             method: 'POST',
             headers: {
@@ -235,107 +264,76 @@ function checkCache() {
             },
             body: JSON.stringify({
                 search_query: searchQuery,
-                output_file: outputFile
+                output_file: outputFile,
             })
         })
-        .then(response => response.json())
-        .then(data => {
+        .then((response) => response.json())
+        .then((data) => {
             if (data.has_cache && data.cache_info && data.cache_info.can_resume) {
-                const cache = data.cache_info;
-                const percentage = Math.round((cache.scraped_count / cache.total_target) * 100);
-                const timestamp = new Date(cache.timestamp).toLocaleString();
-                
-                cacheDetails.innerHTML = `
-                    <div class="mt-2">
-                        <div class="d-flex justify-content-between">
-                            <span><strong>Progress:</strong></span>
-                            <span>${cache.scraped_count}/${cache.total_target} records (${percentage}%)</span>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <span><strong>Last updated:</strong></span>
-                            <span>${timestamp}</span>
-                        </div>
-                        <div class="d-flex justify-content-between">
-                            <span><strong>File status:</strong></span>
-                            <span>${cache.existing_file_count} records in output file</span>
-                        </div>
-                    </div>
-                `;
-                cacheStatus.style.display = 'block';
-                
-                // Auto-enable append mode for resuming
-                document.getElementById('append_mode').checked = true;
-                showNotification('Cache found! Resuming previous session.', 'info');
+                renderCacheDetails(data.cache_info);
+                toggleCacheStatus(true);
+                appendMode.checked = true;
+                showNotification('Cache found! We will resume from the previous session.', 'info');
             } else {
-                cacheStatus.style.display = 'none';
+                toggleCacheStatus(false);
             }
         })
-        .catch(error => {
-            console.log('Cache check failed:', error);
-            cacheStatus.style.display = 'none';
+        .catch(() => {
+            toggleCacheStatus(false);
         });
-    } else {
-        cacheStatus.style.display = 'none';
     }
-}
 
-// Handle fast append checkbox logic
-document.getElementById('fast_append').addEventListener('change', function() {
-    const appendMode = document.getElementById('append_mode');
-    if (this.checked) {
-        appendMode.checked = true;
-        appendMode.disabled = true;
-    } else {
-        appendMode.disabled = false;
-    }
-});
-
-// Add event listeners for cache checking
-document.getElementById('search_query').addEventListener('input', debounce(checkCache, 500));
-document.getElementById('output_file').addEventListener('input', debounce(checkCache, 500));
-
-// Debounce function to avoid too many API calls
-function debounce(func, wait) {
-    let timeout;
-    return function executedFunction(...args) {
-        const later = () => {
+    function debounce(func, wait) {
+        let timeout;
+        return function executedFunction(...args) {
+            const later = () => {
+                clearTimeout(timeout);
+                func(...args);
+            };
             clearTimeout(timeout);
-            func(...args);
+            timeout = setTimeout(later, wait);
         };
-        clearTimeout(timeout);
-        timeout = setTimeout(later, wait);
-    };
-}
-
-// Form validation
-document.getElementById('scrapingForm').addEventListener('submit', function(e) {
-    const searchQuery = document.getElementById('search_query').value.trim();
-    const totalResults = document.getElementById('total_results').value;
-    
-    if (!searchQuery) {
-        e.preventDefault();
-        showNotification('Please enter a search query', 'error');
-        return;
     }
-    
-    if (totalResults < 1) {
-        e.preventDefault();
-        showNotification('Please enter a valid number of results', 'error');
-        return;
-    }
-    
-    // Show loading state
-    const submitBtn = document.getElementById('submitBtn');
-    submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> Starting Scraping...';
-    submitBtn.disabled = true;
-});
 
-// Check cache on page load if fields are pre-filled
-document.addEventListener('DOMContentLoaded', function() {
-    // Initially hide the form
-    document.getElementById('standardForm').style.display = 'none';
-    checkCache();
-});
+    fastAppend.addEventListener('change', function () {
+        if (this.checked) {
+            appendMode.checked = true;
+            appendMode.disabled = true;
+            showNotification('Ultra-fast append enabled. Duplicate checks are skipped.', 'warning', { duration: 6000 });
+        } else {
+            appendMode.disabled = false;
+        }
+    });
+
+    searchQueryInput.addEventListener('input', debounce(checkCache, 500));
+    outputFileInput.addEventListener('input', debounce(checkCache, 500));
+
+    document.getElementById('scrapingForm').addEventListener('submit', function (event) {
+        const searchQuery = searchQueryInput.value.trim();
+        const totalResults = parseInt(totalResultsInput.value, 10);
+
+        if (!searchQuery) {
+            event.preventDefault();
+            showNotification('Please enter a search query.', 'error');
+            searchQueryInput.focus();
+            return;
+        }
+
+        if (!Number.isFinite(totalResults) || totalResults < 1) {
+            event.preventDefault();
+            showNotification('Please enter a valid number of results (minimum 1).', 'error');
+            totalResultsInput.focus();
+            return;
+        }
+
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Preparing…';
+        submitBtn.disabled = true;
+    });
+
+    document.addEventListener('DOMContentLoaded', () => {
+        toggleCacheStatus(false);
+        checkCache();
+    });
+})();
 </script>
-
 {% endblock %}

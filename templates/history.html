@@ -1,101 +1,82 @@
 {% extends "base.html" %}
 
+{% block title %}Scraping History · Google Maps Scraper{% endblock %}
+
 {% block content %}
-<div class="row justify-content-center">
-    <div class="col-md-12">
-        <div class="card">
-            <div class="card-header bg-secondary text-white">
-                <h4><i class="fas fa-history"></i> Scraping History</h4>
-                <p class="mb-0">Previous scraping jobs and their results</p>
-            </div>
-            <div class="card-body">
-                {% if jobs %}
-                    <div class="table-responsive">
-                        <table class="table table-striped">
-                            <thead class="table-dark">
-                                <tr>
-                                    <th>Search Query</th>
-                                    <th>Results</th>
-                                    <th>Output File</th>
-                                    <th>Status</th>
-                                    <th>Started</th>
-                                    <th>Duration</th>
-                                    <th>Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for job in jobs %}
-                                <tr>
-                                    <td>
-                                        <div class="text-truncate" style="max-width: 200px;" title="{{ job.search_query }}">
-                                            {{ job.search_query }}
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="badge bg-info">{{ job.result_count }}/{{ job.total_results }}</span>
-                                    </td>
-                                    <td>
-                                        <code>{{ job.output_file }}</code>
-                                    </td>
-                                    <td>
-                                        {% if job.status == 'completed' %}
-                                            <span class="badge bg-success">
-                                                <i class="fas fa-check"></i> Completed
-                                            </span>
-                                        {% elif job.status == 'failed' %}
-                                            <span class="badge bg-danger">
-                                                <i class="fas fa-times"></i> Failed
-                                            </span>
-                                        {% else %}
-                                            <span class="badge bg-warning">
-                                                <i class="fas fa-clock"></i> {{ job.status.title() }}
-                                            </span>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        <small>{{ job.start_time.strftime('%Y-%m-%d %H:%M') }}</small>
-                                    </td>
-                                    <td>
-                                        {% if job.end_time %}
-                                            {% set duration = job.end_time - job.start_time %}
-                                            <small>{{ duration.total_seconds()|int }}s</small>
-                                        {% else %}
-                                            <small class="text-muted">-</small>
-                                        {% endif %}
-                                    </td>
-                                    <td>
-                                        <div class="btn-group btn-group-sm">
-                                            <a href="{{ url_for('monitor_job', job_id=job.job_id) }}" 
-                                               class="btn btn-outline-primary btn-sm" 
-                                               title="View Details">
-                                                <i class="fas fa-eye"></i>
-                                            </a>
-                                            {% if job.status == 'completed' %}
-                                                <a href="{{ url_for('download_results', job_id=job.job_id) }}" 
-                                                   class="btn btn-outline-success btn-sm" 
-                                                   title="Download Results">
-                                                    <i class="fas fa-download"></i>
-                                                </a>
-                                            {% endif %}
-                                        </div>
-                                    </td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                {% else %}
-                    <div class="text-center py-5">
-                        <i class="fas fa-inbox fa-3x text-muted mb-3"></i>
-                        <h5 class="text-muted">No scraping jobs found</h5>
-                        <p class="text-muted">Start your first scraping job to see results here.</p>
-                        <a href="{{ url_for('index') }}" class="btn btn-primary">
-                            <i class="fas fa-plus"></i> Start New Job
-                        </a>
-                    </div>
-                {% endif %}
-            </div>
-        </div>
+<section class="page-hero page-hero--compact" aria-labelledby="history-title">
+    <div class="page-hero__content">
+        <span class="hero-eyebrow">Job archive</span>
+        <h1 id="history-title">Review past scraping runs</h1>
+        <p class="mb-0">Download CSV outputs, reopen live monitors, or pick up where you left off. Status chips show progress at a glance across devices and themes.</p>
     </div>
-</div>
+</section>
+
+{% if jobs %}
+    <div class="history-grid" role="list">
+        {% for job in jobs %}
+            {% set status = job.status %}
+            {% set chip_class = 'status-chip--running' %}
+            {% set chip_icon = 'fa-clock' %}
+            {% set chip_label = status.title() %}
+            {% if status == 'completed' %}
+                {% set chip_class = 'status-chip--completed' %}
+                {% set chip_icon = 'fa-circle-check' %}
+                {% set chip_label = 'Completed' %}
+            {% elif status == 'failed' %}
+                {% set chip_class = 'status-chip--failed' %}
+                {% set chip_icon = 'fa-triangle-exclamation' %}
+                {% set chip_label = 'Failed' %}
+            {% endif %}
+            <article class="history-card" role="listitem">
+                <div class="history-card__heading">
+                    <div class="flex-grow-1">
+                        <h2 class="h5 mb-1 text-truncate" title="{{ job.search_query }}">{{ job.search_query }}</h2>
+                        <p class="mb-0 text-muted">Output: <code>{{ job.output_file }}</code></p>
+                    </div>
+                    <span class="status-chip {{ chip_class }}">
+                        <i class="fa-solid {{ chip_icon }}"></i>
+                        <span>{{ chip_label }}</span>
+                    </span>
+                </div>
+                <div class="job-meta">
+                    <div><strong>Results:</strong> {{ job.result_count }}/{{ job.total_results }}</div>
+                    <div><strong>Started:</strong> {{ job.start_time.strftime('%Y-%m-%d %H:%M') }}</div>
+                    <div>
+                        <strong>Duration:</strong>
+                        {% if job.end_time %}
+                            {% set duration = job.end_time - job.start_time %}
+                            {{ duration.total_seconds()|int }}s
+                        {% else %}
+                            In progress
+                        {% endif %}
+                    </div>
+                </div>
+                <div class="job-actions">
+                    <a href="{{ url_for('monitor_job', job_id=job.job_id) }}" class="btn btn-soft btn-sm">
+                        <i class="fa-solid fa-eye"></i>
+                        <span class="ms-2">View details</span>
+                    </a>
+                    {% if job.status == 'completed' %}
+                        <a href="{{ url_for('download_results', job_id=job.job_id) }}" class="btn btn-primary btn-sm">
+                            <i class="fa-solid fa-download"></i>
+                            <span class="ms-2">Download CSV</span>
+                        </a>
+                    {% endif %}
+                </div>
+            </article>
+        {% endfor %}
+    </div>
+{% else %}
+    <section class="grounded-card" aria-labelledby="empty-history-title">
+        <div class="grounded-card__body text-center py-5">
+            <div class="mb-3"><span class="icon-stack"><i class="fa-solid fa-inbox"></i></span></div>
+            <h2 id="empty-history-title" class="h4">No scraping jobs yet</h2>
+            <p class="text-muted">Launch a new run to monitor progress here and revisit downloads anytime.</p>
+            <a href="{{ url_for('index') }}" class="btn btn-primary">
+                <i class="fa-solid fa-plus"></i>
+                <span class="ms-2">Start first scrape</span>
+            </a>
+        </div>
+    </section>
+{% endif %}
 {% endblock %}
