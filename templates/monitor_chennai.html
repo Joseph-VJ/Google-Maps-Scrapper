@@ -66,6 +66,7 @@
                                 <i class="fas fa-database"></i> Results Found: 
                                 <span id="result-count">{{ job.result_count }}</span>
                             </small>
+                            <small id="eta-info" class="text-muted d-block"></small>
                         </div>
                     </div>
                 </div>
@@ -75,7 +76,7 @@
                     <h6><i class="fas fa-list"></i> Selected Areas:</h6>
                     <div class="card">
                         <div class="card-body">
-                            <div class="row">
+                            <div class="row" id="area-badge-container">
                                 {% for area in job.areas %}
                                     <div class="col-md-3 mb-2">
                                         <span class="badge bg-light text-dark">
@@ -167,153 +168,227 @@
 
 {% block scripts %}
 <script>
-let jobId = '{{ job.job_id }}';
+document.addEventListener('DOMContentLoaded', function() {
+    const jobId = '{{ job.job_id }}';
+    const socket = io();
 
-// Connect to SocketIO
-const socket = io();
+    const statusBadge = document.getElementById('status-badge');
+    const progressBar = document.getElementById('progress-bar');
+    const progressText = document.getElementById('progress-text');
+    const completedAreasEl = document.getElementById('completed-areas');
+    const currentAreaEl = document.getElementById('current-area');
+    const resultCountEl = document.getElementById('result-count');
+    const endTimeEl = document.getElementById('end-time');
+    const errorSection = document.getElementById('error-section');
+    const errorMessageEl = document.getElementById('error-message');
+    const etaInfoEl = document.getElementById('eta-info');
+    const actionButtons = document.getElementById('action-buttons');
+    const areaBadgeContainer = document.getElementById('area-badge-container');
+    let latestPreviewRecords = [];
 
-// Listen for job updates
-socket.on('job_update', function(data) {
-    if (data.job_id === jobId) {
-        // Update status badge
-        const statusBadge = document.getElementById('status-badge');
-        statusBadge.textContent = data.status.charAt(0).toUpperCase() + data.status.slice(1);
-        
-        // Update badge color based on status
-        statusBadge.className = 'badge ';
-        if (data.status === 'completed') {
-            statusBadge.className += 'bg-success';
-            // Add download button if not exists
-            if (!document.querySelector('a[href*="download_results"]')) {
-                const actionButtons = document.getElementById('action-buttons');
-                actionButtons.innerHTML = `
-                    <a href="/download/${jobId}" class="btn btn-success me-2">
-                        <i class="fas fa-download"></i> Download Results
-                    </a>
-                    <button type="button" class="btn btn-info me-2" onclick="previewResults()">
-                        <i class="fas fa-eye"></i> Preview Results
-                    </button>
-                    <a href="/chennai" class="btn btn-secondary">
-                        <i class="fas fa-arrow-left"></i> Back to Chennai Scraper
-                    </a>
-                    <a href="/" class="btn btn-outline-secondary">
-                        <i class="fas fa-home"></i> Home
-                    </a>
-                `;
-            }
-        } else if (data.status === 'failed') {
-            statusBadge.className += 'bg-danger';
-            // Show error message
-            if (data.error_message) {
-                const errorSection = document.getElementById('error-section');
-                const errorMessage = document.getElementById('error-message');
-                errorMessage.textContent = data.error_message;
-                errorSection.classList.remove('d-none');
-            }
-        } else {
-            statusBadge.className += 'bg-primary';
-        }
-        
-        // Update progress bar
-        const progressBar = document.getElementById('progress-bar');
-        const progressText = document.getElementById('progress-text');
-        progressBar.style.width = data.progress + '%';
-        progressText.textContent = data.progress.toFixed(1) + '%';
-        
-        // Update Chennai-specific info
-        if (data.current_area) {
-            document.getElementById('current-area').textContent = data.current_area;
-        }
-        if (data.completed_areas !== undefined) {
-            document.getElementById('completed-areas').textContent = data.completed_areas;
-        }
-        
-        // Update result count
-        document.getElementById('result-count').textContent = data.result_count;
-        
-        // Update end time if provided
-        if (data.end_time) {
-            document.getElementById('end-time').textContent = data.end_time;
-        }
-        
-        // Update area status badges
-        if (data.current_area || data.completed_areas !== undefined) {
-            updateAreaBadges(data.completed_areas, data.current_area);
-        }
-        
-        // Stop progress animation if job is complete
-        if (data.status === 'completed' || data.status === 'failed') {
-            progressBar.classList.remove('progress-bar-animated');
+    const initialProgress = parseFloat("{{ job.progress }}");
+    if (progressBar && !Number.isNaN(initialProgress)) {
+        progressBar.style.width = initialProgress + '%';
+        progressBar.setAttribute('data-progress', initialProgress);
+        if (progressText) {
+            progressText.textContent = initialProgress.toFixed(1) + '%';
         }
     }
-});
 
-function updateAreaBadges(completedAreas, currentArea) {
-    const badges = document.querySelectorAll('.badge');
-    badges.forEach((badge, index) => {
-        const icon = badge.querySelector('i');
-        const areaName = badge.textContent.trim();
-        
-        if (index < completedAreas) {
-            icon.className = 'fas fa-check text-success';
-        } else if (areaName === currentArea) {
-            icon.className = 'fas fa-spinner fa-spin text-primary';
-        } else {
-            icon.className = 'fas fa-clock text-muted';
+    function ensureDownloadActions() {
+        if (!actionButtons) {
+            return;
         }
-    });
-}
+        if (!document.querySelector(`a[href="/download/${jobId}"]`)) {
+            actionButtons.innerHTML = `
+                <a href="/download/${jobId}" class="btn btn-success me-2">
+                    <i class="fas fa-download"></i> Download Results
+                </a>
+                <button type="button" class="btn btn-info me-2" onclick="previewResults()">
+                    <i class="fas fa-eye"></i> Preview Results
+                </button>
+                <a href="/chennai" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Back to Chennai Scraper
+                </a>
+                <a href="/" class="btn btn-outline-secondary">
+                    <i class="fas fa-home"></i> Home
+                </a>
+            `;
+        }
+    }
 
-function previewResults() {
-    const modal = new bootstrap.Modal(document.getElementById('previewModal'));
-    modal.show();
-    
-    fetch(`/preview/${jobId}`)
-        .then(response => response.json())
-        .then(data => {
-            if (data.error) {
-                document.getElementById('preview-content').innerHTML = 
-                    `<div class="alert alert-danger">${data.error}</div>`;
+    function updateAreaBadges(completedAreas, currentArea) {
+        if (!areaBadgeContainer) {
+            return;
+        }
+        const badges = areaBadgeContainer.querySelectorAll('.badge');
+        badges.forEach((badge, index) => {
+            const icon = badge.querySelector('i');
+            if (!icon) {
                 return;
             }
-            
-            let html = `
-                <div class="mb-3">
-                    <strong>Total Rows:</strong> ${data.total_rows} | 
-                    <strong>Showing:</strong> ${Math.min(10, data.total_rows)} rows
-                </div>
-                <div class="table-responsive">
-                    <table class="table table-striped table-sm">
-                        <thead class="table-dark">
-                            <tr>
-            `;
-            
-            // Add column headers
-            data.columns.forEach(col => {
-                html += `<th>${col}</th>`;
-            });
-            html += '</tr></thead><tbody>';
-            
-            // Add data rows
-            data.data.forEach(row => {
-                html += '<tr>';
-                data.columns.forEach(col => {
-                    let value = row[col] || '';
-                    if (typeof value === 'string' && value.length > 50) {
-                        value = value.substring(0, 50) + '...';
-                    }
-                    html += `<td>${value}</td>`;
-                });
-                html += '</tr>';
-            });
-            
-            html += '</tbody></table></div>';
-            document.getElementById('preview-content').innerHTML = html;
-        })
-        .catch(error => {
-            document.getElementById('preview-content').innerHTML = 
-                `<div class="alert alert-danger">Error loading preview: ${error.message}</div>`;
+            const areaName = badge.textContent.trim();
+            if (typeof completedAreas === 'number' && index < completedAreas) {
+                icon.className = 'fas fa-check text-success';
+            } else if (currentArea && areaName === currentArea) {
+                icon.className = 'fas fa-spinner fa-spin text-primary';
+            } else {
+                icon.className = 'fas fa-clock text-muted';
+            }
         });
-}
+    }
+
+    function updateStatus(status, errorMessage) {
+        if (!statusBadge) {
+            return;
+        }
+        const safeStatus = status || 'running';
+        statusBadge.className = 'badge fs-6 ';
+        statusBadge.textContent = safeStatus.charAt(0).toUpperCase() + safeStatus.slice(1);
+        if (safeStatus === 'completed') {
+            statusBadge.classList.add('bg-success');
+            if (typeof showNotification === 'function') {
+                showNotification('Chennai scraping job completed successfully!', 'success');
+            }
+            ensureDownloadActions();
+        } else if (safeStatus === 'failed') {
+            statusBadge.classList.add('bg-danger');
+            if (typeof showNotification === 'function') {
+                showNotification('Chennai scraping job failed. Please review the error details.', 'error');
+            }
+        } else if (safeStatus === 'interrupted') {
+            statusBadge.classList.add('bg-warning', 'text-dark');
+            if (typeof showNotification === 'function') {
+                showNotification('Chennai scraping job was interrupted.', 'warning');
+            }
+        } else {
+            statusBadge.classList.add('bg-primary');
+        }
+
+        if ((safeStatus === 'failed' || safeStatus === 'interrupted') && errorSection && errorMessageEl) {
+            if (errorMessage) {
+                errorMessageEl.textContent = errorMessage;
+                errorSection.classList.remove('d-none');
+            } else {
+                errorSection.classList.add('d-none');
+            }
+        } else if (errorSection) {
+            errorSection.classList.add('d-none');
+        }
+    }
+
+    socket.on('job_progress', function(data) {
+        if (data.job_id !== jobId) {
+            return;
+        }
+        updateStatus(data.status, data.error_message);
+
+        if (progressBar && typeof data.progress === 'number') {
+            const boundedProgress = Math.min(Math.max(data.progress, 0), 100);
+            progressBar.style.width = boundedProgress + '%';
+            progressBar.setAttribute('data-progress', boundedProgress);
+            if (progressText) {
+                progressText.textContent = boundedProgress.toFixed(1) + '%';
+            }
+        }
+
+        if (typeof data.completed_areas === 'number' && completedAreasEl) {
+            completedAreasEl.textContent = data.completed_areas;
+        }
+        if (data.current_area && currentAreaEl) {
+            currentAreaEl.textContent = data.current_area;
+        }
+        if (typeof data.result_count === 'number' && resultCountEl) {
+            resultCountEl.textContent = data.result_count;
+        }
+        if (data.end_time && endTimeEl) {
+            endTimeEl.textContent = data.end_time;
+        }
+
+        updateAreaBadges(data.completed_areas, data.current_area);
+
+        if (progressBar && ['completed', 'failed', 'interrupted'].includes(data.status)) {
+            progressBar.classList.remove('progress-bar-animated');
+        }
+    });
+
+    socket.on('job_metrics', function(data) {
+        if (data.job_id !== jobId || !etaInfoEl) {
+            return;
+        }
+        const parts = [];
+        if (typeof data.throughput_per_minute === 'number' && data.throughput_per_minute > 0) {
+            parts.push(`${data.throughput_per_minute.toFixed(1)} rows/min`);
+        }
+        if (typeof data.eta_seconds === 'number' && data.eta_seconds >= 0) {
+            const minutes = Math.floor(data.eta_seconds / 60);
+            const seconds = Math.floor(data.eta_seconds % 60);
+            parts.push(`ETA: ${minutes}m ${seconds}s`);
+        }
+        etaInfoEl.textContent = parts.join(' · ');
+    });
+
+    socket.on('job_record_batch', function(data) {
+        if (data.job_id !== jobId) {
+            return;
+        }
+        latestPreviewRecords = data.preview || data.records || [];
+    });
+
+    window.previewResults = function previewResults() {
+        const modal = new bootstrap.Modal(document.getElementById('previewModal'));
+        modal.show();
+
+        fetch(`/preview/${jobId}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    document.getElementById('preview-content').innerHTML =
+                        `<div class="alert alert-danger">${data.error}</div>`;
+                    return;
+                }
+
+                const rowsToRender = data.data && data.data.length ? data.data : latestPreviewRecords;
+                const columns = data.columns && data.columns.length
+                    ? data.columns
+                    : (rowsToRender[0] ? Object.keys(rowsToRender[0]) : []);
+                const totalRows = typeof data.total_rows === 'number' ? data.total_rows : rowsToRender.length;
+
+                let html = `
+                    <div class="mb-3">
+                        <strong>Total Rows:</strong> ${totalRows} |
+                        <strong>Showing:</strong> ${Math.min(rowsToRender.length, 10)} rows
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-sm">
+                            <thead class="table-dark">
+                                <tr>
+                `;
+                columns.forEach(col => {
+                    html += `<th>${col}</th>`;
+                });
+                html += '</tr></thead><tbody>';
+
+                rowsToRender.slice(0, 10).forEach(row => {
+                    html += '<tr>';
+                    columns.forEach(col => {
+                        let value = row[col] ?? '';
+                        if (typeof value === 'string' && value.length > 50) {
+                            value = `${value.substring(0, 50)}...`;
+                        }
+                        html += `<td>${value}</td>`;
+                    });
+                    html += '</tr>';
+                });
+
+                html += '</tbody></table></div>';
+                document.getElementById('preview-content').innerHTML = html;
+            })
+            .catch(error => {
+                document.getElementById('preview-content').innerHTML =
+                    `<div class="alert alert-danger">Error loading preview: ${error.message}</div>`;
+            });
+    };
+});
 </script>
 {% endblock %}
